@@ -14,6 +14,9 @@ type Copy = {
   title: string;
   account: string;
   language: string;
+  byLine: string;
+  xProfile: string;
+  github: string;
   key: string;
   keyPlaceholder: string;
   showKey: string;
@@ -131,6 +134,9 @@ export const copy: Record<Lang, Copy> = {
     title: "API-Trading Dashboard",
     account: "Konto",
     language: "Sprache",
+    byLine: "Erstellt von Galson",
+    xProfile: "Galson auf X",
+    github: "Github:",
     key: "Fusion-API-Schlüssel",
     keyPlaceholder: "Fusion-Schlüssel",
     showKey: "Schlüssel zeigen",
@@ -253,6 +259,9 @@ export const copy: Record<Lang, Copy> = {
     title: "API-Trading Dashboard",
     account: "Account",
     language: "Language",
+    byLine: "Created by Galson",
+    xProfile: "Galson on X",
+    github: "Github:",
     key: "Fusion API key",
     keyPlaceholder: "Fusion key",
     showKey: "Show key",

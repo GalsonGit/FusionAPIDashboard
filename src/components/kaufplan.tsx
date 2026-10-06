@@ -509,6 +509,31 @@ export function Kaufplan() {
         <div className="min-w-0">
           <p className="font-mono text-xs text-brass">Bitpanda Fusion</p>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{t.title}</h1>
+          <p className="mt-1 flex items-center gap-1 text-sm text-muted">
+            <span>{t.byLine}</span>
+            <a
+              href="https://x.com/GalsonVogerl"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={t.xProfile}
+              className="inline-flex size-11 items-center justify-center rounded-lg text-fg"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4 fill-current">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+          </p>
+          <p className="flex flex-wrap items-baseline gap-x-1 text-sm text-muted">
+            <span>{t.github}</span>
+            <a
+              href="https://github.com/GalsonGit/FusionAPIDashboard"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="break-all text-fg underline-offset-2 hover:underline"
+            >
+              github.com/GalsonGit/FusionAPIDashboard
+            </a>
+          </p>
         </div>
         <div className="flex rounded-lg border border-line p-1" role="group" aria-label={t.language}>
           {(["de", "en"] as const).map((code) => (

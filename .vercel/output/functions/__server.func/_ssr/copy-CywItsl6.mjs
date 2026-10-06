@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/copy-BJfp-8u5.js
+//#region node_modules/.nitro/vite/services/ssr/assets/copy-CywItsl6.js
 function readLang() {
 	try {
 		return localStorage.getItem("kaufplan.lang") === "en" ? "en" : "de";
@@ -11,6 +11,9 @@ var copy = {
 		title: "API-Trading Dashboard",
 		account: "Konto",
 		language: "Sprache",
+		byLine: "Erstellt von Galson",
+		xProfile: "Galson auf X",
+		github: "Github:",
 		key: "Fusion-API-Schlüssel",
 		keyPlaceholder: "Fusion-Schlüssel",
 		showKey: "Schlüssel zeigen",
@@ -139,6 +142,9 @@ var copy = {
 		title: "API-Trading Dashboard",
 		account: "Account",
 		language: "Language",
+		byLine: "Created by Galson",
+		xProfile: "Galson on X",
+		github: "Github:",
 		key: "Fusion API key",
 		keyPlaceholder: "Fusion key",
 		showKey: "Show key",
