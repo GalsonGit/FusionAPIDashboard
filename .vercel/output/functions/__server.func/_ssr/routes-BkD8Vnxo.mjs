@@ -3,7 +3,7 @@ import { b as require_jsx_runtime, q as require_react } from "../_libs/@tanstack
 import { n as TSS_SERVER_FUNCTION, r as getServerFnById, t as createServerFn } from "./ssr.mjs";
 import { n as readLang, t as copy } from "./copy-CywItsl6.mjs";
 import { a as RefreshCw, c as Eye, i as Search, l as EyeOff, n as Unplug, o as LoaderCircle, r as TriangleAlert, s as KeyRound, t as X, u as Check } from "../_libs/lucide-react.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-DRsbiAi0.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BkD8Vnxo.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var createSsrRpc = (functionId) => {
@@ -1075,59 +1075,59 @@ function Kaufplan() {
 		className: "mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-4 py-6 md:px-8 md:py-10",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", {
-				className: "flex items-center justify-between gap-3",
+				className: "flex flex-col gap-1",
 				children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-					className: "min-w-0",
-					children: [
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+					className: "flex items-center justify-between gap-3",
+					children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+						className: "min-w-0",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 							className: "font-mono text-xs text-brass",
 							children: "Bitpanda Fusion"
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", {
 							className: "text-2xl font-semibold tracking-tight sm:text-3xl",
 							children: t.title
+						})]
+					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+						className: "flex rounded-lg border border-line p-1",
+						role: "group",
+						"aria-label": t.language,
+						children: ["de", "en"].map((code) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							type: "button",
+							"aria-pressed": lang === code,
+							onClick: () => {
+								setLang(code);
+								localStorage.setItem("kaufplan.lang", code);
+							},
+							className: `h-10 rounded-md px-3 text-sm font-medium ${lang === code ? "bg-primary text-primary-fg" : "text-muted"}`,
+							children: code.toUpperCase()
+						}, code))
+					})]
+				}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
+					className: "flex flex-wrap items-center gap-x-2 text-sm text-muted",
+					children: [
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t.byLine }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "https://x.com/GalsonVogerl",
+							target: "_blank",
+							rel: "noopener noreferrer",
+							"aria-label": t.xProfile,
+							className: "inline-flex size-11 items-center justify-center rounded-lg text-fg",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", {
+								viewBox: "0 0 24 24",
+								"aria-hidden": "true",
+								className: "size-4 fill-current",
+								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" })
+							})
 						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-							className: "mt-1 flex items-center gap-1 text-sm text-muted",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t.byLine }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-								href: "https://x.com/GalsonVogerl",
-								target: "_blank",
-								rel: "noopener noreferrer",
-								"aria-label": t.xProfile,
-								className: "inline-flex size-11 items-center justify-center rounded-lg text-fg",
-								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", {
-									viewBox: "0 0 24 24",
-									"aria-hidden": "true",
-									className: "size-4 fill-current",
-									children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.727-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z" })
-								})
-							})]
-						}),
-						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-							className: "flex flex-wrap items-baseline gap-x-1 text-sm text-muted",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t.github }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
-								href: "https://github.com/GalsonGit/FusionAPIDashboard",
-								target: "_blank",
-								rel: "noopener noreferrer",
-								className: "break-all text-fg underline-offset-2 hover:underline",
-								children: "github.com/GalsonGit/FusionAPIDashboard"
-							})]
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: t.github }),
+						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("a", {
+							href: "https://github.com/GalsonGit/FusionAPIDashboard",
+							target: "_blank",
+							rel: "noopener noreferrer",
+							className: "text-fg underline-offset-2 hover:underline",
+							children: "github.com/GalsonGit/FusionAPIDashboard"
 						})
 					]
-				}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
-					className: "flex rounded-lg border border-line p-1",
-					role: "group",
-					"aria-label": t.language,
-					children: ["de", "en"].map((code) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
-						type: "button",
-						"aria-pressed": lang === code,
-						onClick: () => {
-							setLang(code);
-							localStorage.setItem("kaufplan.lang", code);
-						},
-						className: `h-10 rounded-md px-3 text-sm font-medium ${lang === code ? "bg-primary text-primary-fg" : "text-muted"}`,
-						children: code.toUpperCase()
-					}, code))
 				})]
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", {
