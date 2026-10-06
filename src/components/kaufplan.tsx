@@ -764,7 +764,7 @@ export function Kaufplan() {
                     type="button"
                     disabled={available <= 0}
                     onClick={() => setInvestPercent(mark)}
-                    className={`h-11 min-w-11 flex-1 font-mono text-xs disabled:opacity-40 ${active ? "text-brass" : "text-muted"}`}
+                    className={`h-11 min-w-11 flex-1 rounded-lg border font-mono text-sm font-medium disabled:opacity-40 ${active ? "border-primary bg-primary text-primary-fg" : "border-line bg-bg text-fg"}`}
                   >
                     {mark}%
                   </button>
