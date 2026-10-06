@@ -154,10 +154,11 @@ export function Kaufplan() {
 
   const types = useMemo(() => {
     const map = new Map<string, string>();
+    const quotes = new Set((snapshot?.instruments ?? []).map((item) => item.quote));
     for (const instrument of snapshot?.instruments ?? []) {
-      map.set(instrument.base, instrument.baseType);
-      map.set(instrument.quote, "fiat");
+      if (!quotes.has(instrument.base)) map.set(instrument.base, instrument.baseType);
     }
+    for (const code of quotes) map.set(code, "fiat");
     return map;
   }, [snapshot]);
 
@@ -175,7 +176,7 @@ export function Kaufplan() {
   const catalog = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return (snapshot?.instruments ?? [])
-      .filter((item) => item.quote === quote)
+      .filter((item) => item.quote === quote || item.quote === "EURCV")
       .filter((item) => (family === "alle" ? true : familyOf(item.baseType) === family))
       .filter((item) => {
         if (!needle) return true;
@@ -191,7 +192,7 @@ export function Kaufplan() {
   const families = useMemo(() => {
     const present = new Set<Family>();
     for (const item of snapshot?.instruments ?? []) {
-      if (item.quote === quote) present.add(familyOf(item.baseType));
+      if (item.quote === quote || item.quote === "EURCV") present.add(familyOf(item.baseType));
     }
     return (["krypto", "aktie", "etf", "rohstoff", "sonstige"] as Family[]).filter((key) => present.has(key));
   }, [snapshot, quote]);
@@ -364,13 +365,17 @@ export function Kaufplan() {
 
   function toggle(pair: string) {
     setDraft(null);
+    const pairQuote = byPair.get(pair)?.quote ?? pair.split("-").pop() ?? quote;
+    const exists = selections.some((item) => item.pair === pair);
+    if (!exists && pairQuote !== quote) setQuote(pairQuote);
     setSelections((prev) => {
       if (prev.some((item) => item.pair === pair)) {
         const next = prev.filter((item) => item.pair !== pair);
         return auto ? scaleToFull(next) : next;
       }
-      if (prev.length === 0) return [{ pair, hundredths: 10000 }];
-      return [...prev, { pair, hundredths: 0 }];
+      const base = pairQuote === quote ? prev : prev.filter((item) => item.pair.endsWith(`-${pairQuote}`));
+      if (base.length === 0) return [{ pair, hundredths: 10000 }];
+      return [...base, { pair, hundredths: 0 }];
     });
   }
 
@@ -498,9 +503,19 @@ export function Kaufplan() {
     }
   }
 
-  const visible = catalog.slice(0, 60);
+  const visible = [
+    ...catalog.filter((item) => item.quote !== "EURCV").slice(0, 60),
+    ...catalog.filter((item) => item.quote === "EURCV"),
+  ];
+  const quoteLabel = [quote, ...new Set(catalog.filter((item) => item.quote !== quote).map((item) => item.quote))].join(
+    " + ",
+  );
   const fiatBalances = [...(snapshot?.balances ?? [])]
-    .filter((item) => isFiat(item.symbol, types))
+    .filter((item) => {
+      if (!isFiat(item.symbol, types)) return false;
+      if (item.symbol.toUpperCase() !== "EURCV") return true;
+      return num(item.available) > 0 || num(item.locked) > 0;
+    })
     .sort((a, b) => a.symbol.localeCompare(b.symbol));
 
   return (
@@ -785,7 +800,7 @@ export function Kaufplan() {
             </div>
             <p className="mt-2 text-xs text-muted">
               {snapshot
-                ? `${t.pairCount(catalog.length, quote)}${catalog.length > visible.length ? ` · ${t.shown(visible.length)}` : ""}`
+                ? `${t.pairCount(catalog.length, quoteLabel)}${catalog.length > visible.length ? ` · ${t.shown(visible.length)}` : ""}`
                 : t.noConnection}
             </p>
             <ul className="mt-2 max-h-96 divide-y divide-line overflow-y-auto rounded-lg border border-line">

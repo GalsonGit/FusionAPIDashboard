@@ -77,7 +77,7 @@ export const FEE_TIERS: FeeTier[] = [
   { level: 7, label: "Level 7", min: 250_000_000, max: Infinity, fee: 0.0002, volume: "darüber" },
 ];
 
-const FIAT = ["EUR", "USD", "CHF", "GBP"];
+const FIAT = ["EUR", "EURCV", "USD", "CHF", "GBP"];
 
 export type Family = "krypto" | "aktie" | "etf" | "rohstoff" | "sonstige";
 
@@ -151,8 +151,10 @@ export function activeLevel(account: Account | null): number | null {
 }
 
 export function isFiat(symbol: string, types: Map<string, string>): boolean {
-  if (FIAT.includes(symbol)) return true;
-  return types.get(symbol)?.toLowerCase() === "fiat";
+  const code = symbol.toUpperCase();
+  if (FIAT.includes(code)) return true;
+  const type = types.get(symbol) ?? types.get(code);
+  return type?.toLowerCase() === "fiat";
 }
 
 export function num(value: string | null | undefined): number {
@@ -482,6 +484,7 @@ export function demoSnapshot(): Snapshot {
     warning: null,
     balances: [
       { symbol: "EUR", available: "2500.00", locked: "0.00" },
+      { symbol: "EURCV", available: "480.00", locked: "0.00" },
       { symbol: "USD", available: "120.40", locked: "0.00" },
       { symbol: "BTC", available: "0.0142", locked: "0" },
       { symbol: "ETH", available: "0.35", locked: "0" },
@@ -501,21 +504,24 @@ export function demoSnapshot(): Snapshot {
         requiredVolume30d: "100000",
       },
     },
-    instruments: rows.map(([base, name, type, price, volume, min, marketCap]) => ({
-      pair: `${base}-EUR`,
-      base,
-      quote: "EUR",
-      baseType: type,
-      name,
-      price,
-      marketCap: String(marketCap),
-      high: null,
-      low: null,
-      volume: String(volume),
-      minOrderAmount: min.toFixed(2),
-      maxOrderAmount: "250000.00",
-      amountIncrement: "0.01",
-      sizeIncrement: "0.00000001",
-    })),
+    instruments: rows.flatMap(([base, name, type, price, volume, min, marketCap]) => {
+      const row = {
+        base,
+        baseType: type,
+        name,
+        price,
+        marketCap: String(marketCap),
+        high: null,
+        low: null,
+        volume: String(volume),
+        minOrderAmount: min.toFixed(2),
+        maxOrderAmount: "250000.00",
+        amountIncrement: "0.01",
+        sizeIncrement: "0.00000001",
+      };
+      const eur = { ...row, pair: `${base}-EUR`, quote: "EUR" };
+      if (type !== "cryptocoin") return [eur];
+      return [eur, { ...row, pair: `${base}-EURCV`, quote: "EURCV" }];
+    }),
   };
 }

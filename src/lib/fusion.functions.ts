@@ -140,7 +140,7 @@ function loadBalances(body: unknown): Balance[] {
   return asArray(body).map((item) => {
     const record = (item ?? {}) as Record<string, unknown>;
     return {
-      symbol: str(record.symbol),
+      symbol: str(record.symbol).toUpperCase(),
       available: str(record.available || "0"),
       locked: str(record.locked || "0"),
     };
@@ -296,7 +296,8 @@ async function fillMarketCaps(instruments: Instrument[]) {
   for (const item of instruments) {
     if (item.marketCap) continue;
     const row = caps.get(item.base.toUpperCase());
-    const cap = row?.[item.quote.toLowerCase()];
+    const cap =
+      row?.[item.quote.toLowerCase()] ?? (item.quote.toUpperCase() === "EURCV" ? row?.eur : undefined);
     if (cap && cap > 0) item.marketCap = String(Math.round(cap));
   }
 }

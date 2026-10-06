@@ -3,7 +3,7 @@ import { b as require_jsx_runtime, q as require_react } from "../_libs/@tanstack
 import { n as TSS_SERVER_FUNCTION, r as getServerFnById, t as createServerFn } from "./ssr.mjs";
 import { n as readLang, t as copy } from "./copy-CywItsl6.mjs";
 import { a as RefreshCw, c as Eye, i as Search, l as EyeOff, n as Unplug, o as LoaderCircle, r as TriangleAlert, s as KeyRound, t as X, u as Check } from "../_libs/lucide-react.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-Uf12V1QE.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-DRsbiAi0.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var createSsrRpc = (functionId) => {
@@ -124,6 +124,7 @@ var FEE_TIERS = [
 ];
 var FIAT = [
 	"EUR",
+	"EURCV",
 	"USD",
 	"CHF",
 	"GBP"
@@ -170,8 +171,9 @@ function feeRateFor(account) {
 	};
 }
 function isFiat(symbol, types) {
-	if (FIAT.includes(symbol)) return true;
-	return types.get(symbol)?.toLowerCase() === "fiat";
+	const code = symbol.toUpperCase();
+	if (FIAT.includes(code)) return true;
+	return (types.get(symbol) ?? types.get(code))?.toLowerCase() === "fiat";
 }
 function num(value) {
 	if (!value) return 0;
@@ -432,6 +434,11 @@ function demoSnapshot() {
 				locked: "0.00"
 			},
 			{
+				symbol: "EURCV",
+				available: "480.00",
+				locked: "0.00"
+			},
+			{
 				symbol: "USD",
 				available: "120.40",
 				locked: "0.00"
@@ -607,22 +614,33 @@ function demoSnapshot() {
 				25,
 				18e9
 			]
-		].map(([base, name, type, price, volume, min, marketCap]) => ({
-			pair: `${base}-EUR`,
-			base,
-			quote: "EUR",
-			baseType: type,
-			name,
-			price,
-			marketCap: String(marketCap),
-			high: null,
-			low: null,
-			volume: String(volume),
-			minOrderAmount: min.toFixed(2),
-			maxOrderAmount: "250000.00",
-			amountIncrement: "0.01",
-			sizeIncrement: "0.00000001"
-		}))
+		].flatMap(([base, name, type, price, volume, min, marketCap]) => {
+			const row = {
+				base,
+				baseType: type,
+				name,
+				price,
+				marketCap: String(marketCap),
+				high: null,
+				low: null,
+				volume: String(volume),
+				minOrderAmount: min.toFixed(2),
+				maxOrderAmount: "250000.00",
+				amountIncrement: "0.01",
+				sizeIncrement: "0.00000001"
+			};
+			const eur = {
+				...row,
+				pair: `${base}-EUR`,
+				quote: "EUR"
+			};
+			if (type !== "cryptocoin") return [eur];
+			return [eur, {
+				...row,
+				pair: `${base}-EURCV`,
+				quote: "EURCV"
+			}];
+		})
 	};
 }
 var KEY = "kaufplan.key";
@@ -719,10 +737,9 @@ function Kaufplan() {
 	}, [confirmOpen]);
 	const types = (0, import_react.useMemo)(() => {
 		const map = /* @__PURE__ */ new Map();
-		for (const instrument of snapshot?.instruments ?? []) {
-			map.set(instrument.base, instrument.baseType);
-			map.set(instrument.quote, "fiat");
-		}
+		const quotes = new Set((snapshot?.instruments ?? []).map((item) => item.quote));
+		for (const instrument of snapshot?.instruments ?? []) if (!quotes.has(instrument.base)) map.set(instrument.base, instrument.baseType);
+		for (const code of quotes) map.set(code, "fiat");
 		return map;
 	}, [snapshot]);
 	const byPair = (0, import_react.useMemo)(() => {
@@ -733,7 +750,7 @@ function Kaufplan() {
 	const quotes = (0, import_react.useMemo)(() => snapshot ? quoteOptions(snapshot.instruments) : ["EUR"], [snapshot]);
 	const catalog = (0, import_react.useMemo)(() => {
 		const needle = query.trim().toLowerCase();
-		return (snapshot?.instruments ?? []).filter((item) => item.quote === quote).filter((item) => family === "alle" ? true : familyOf(item.baseType) === family).filter((item) => {
+		return (snapshot?.instruments ?? []).filter((item) => item.quote === quote || item.quote === "EURCV").filter((item) => family === "alle" ? true : familyOf(item.baseType) === family).filter((item) => {
 			if (!needle) return true;
 			return item.base.toLowerCase().includes(needle) || item.name.toLowerCase().includes(needle) || item.pair.toLowerCase().includes(needle);
 		}).sort((a, b) => num(b.volume) - num(a.volume) || a.base.localeCompare(b.base, "de"));
@@ -745,7 +762,7 @@ function Kaufplan() {
 	]);
 	const families = (0, import_react.useMemo)(() => {
 		const present = /* @__PURE__ */ new Set();
-		for (const item of snapshot?.instruments ?? []) if (item.quote === quote) present.add(familyOf(item.baseType));
+		for (const item of snapshot?.instruments ?? []) if (item.quote === quote || item.quote === "EURCV") present.add(familyOf(item.baseType));
 		return [
 			"krypto",
 			"aktie",
@@ -905,16 +922,19 @@ function Kaufplan() {
 	}
 	function toggle(pair) {
 		setDraft(null);
+		const pairQuote = byPair.get(pair)?.quote ?? pair.split("-").pop() ?? quote;
+		if (!selections.some((item) => item.pair === pair) && pairQuote !== quote) setQuote(pairQuote);
 		setSelections((prev) => {
 			if (prev.some((item) => item.pair === pair)) {
 				const next = prev.filter((item) => item.pair !== pair);
 				return auto ? scaleToFull(next) : next;
 			}
-			if (prev.length === 0) return [{
+			const base = pairQuote === quote ? prev : prev.filter((item) => item.pair.endsWith(`-${pairQuote}`));
+			if (base.length === 0) return [{
 				pair,
 				hundredths: 1e4
 			}];
-			return [...prev, {
+			return [...base, {
 				pair,
 				hundredths: 0
 			}];
@@ -1044,8 +1064,13 @@ function Kaufplan() {
 			setAccepted(false);
 		}
 	}
-	const visible = catalog.slice(0, 60);
-	const fiatBalances = [...snapshot?.balances ?? []].filter((item) => isFiat(item.symbol, types)).sort((a, b) => a.symbol.localeCompare(b.symbol));
+	const visible = [...catalog.filter((item) => item.quote !== "EURCV").slice(0, 60), ...catalog.filter((item) => item.quote === "EURCV")];
+	const quoteLabel = [quote, ...new Set(catalog.filter((item) => item.quote !== quote).map((item) => item.quote))].join(" + ");
+	const fiatBalances = [...snapshot?.balances ?? []].filter((item) => {
+		if (!isFiat(item.symbol, types)) return false;
+		if (item.symbol.toUpperCase() !== "EURCV") return true;
+		return num(item.available) > 0 || num(item.locked) > 0;
+	}).sort((a, b) => a.symbol.localeCompare(b.symbol));
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
 		className: "mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-4 py-6 md:px-8 md:py-10",
 		children: [
@@ -1370,7 +1395,7 @@ function Kaufplan() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 								className: "mt-2 text-xs text-muted",
-								children: snapshot ? `${t.pairCount(catalog.length, quote)}${catalog.length > visible.length ? ` · ${t.shown(visible.length)}` : ""}` : t.noConnection
+								children: snapshot ? `${t.pairCount(catalog.length, quoteLabel)}${catalog.length > visible.length ? ` · ${t.shown(visible.length)}` : ""}` : t.noConnection
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
 								className: "mt-2 max-h-96 divide-y divide-line overflow-y-auto rounded-lg border border-line",

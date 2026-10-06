@@ -1,6 +1,6 @@
 import { n as TSS_SERVER_FUNCTION, t as createServerFn } from "./ssr.mjs";
 import { t as copy } from "./copy-CywItsl6.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/fusion.functions-C28cIm3-.js
+//#region node_modules/.nitro/vite/services/ssr/assets/fusion.functions-BOHXq8Xb.js
 var createServerRpc = (serverFnMeta, splitImportFn) => {
 	const url = "/_serverFn/" + serverFnMeta.id;
 	return Object.assign(splitImportFn, {
@@ -121,7 +121,7 @@ function loadBalances(body) {
 	return asArray(body).map((item) => {
 		const record = item ?? {};
 		return {
-			symbol: str(record.symbol),
+			symbol: str(record.symbol).toUpperCase(),
 			available: str(record.available || "0"),
 			locked: str(record.locked || "0")
 		};
@@ -275,7 +275,8 @@ async function fillMarketCaps(instruments) {
 	const caps = await loadMarketCaps();
 	for (const item of instruments) {
 		if (item.marketCap) continue;
-		const cap = caps.get(item.base.toUpperCase())?.[item.quote.toLowerCase()];
+		const row = caps.get(item.base.toUpperCase());
+		const cap = row?.[item.quote.toLowerCase()] ?? (item.quote.toUpperCase() === "EURCV" ? row?.eur : void 0);
 		if (cap && cap > 0) item.marketCap = String(Math.round(cap));
 	}
 }
