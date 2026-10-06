@@ -25,11 +25,11 @@ import {
   formatQty,
   formatRate,
   formatShare,
-  isFiat,
   num,
   parseDecimal,
   planLegs,
   quoteOptions,
+  richestQuote,
   remainderIndex,
   scaleToFull,
   setNumberLocale,
@@ -96,6 +96,7 @@ export function Kaufplan() {
   const [remember, setRemember] = useState(false);
   const [rememberLists, setRememberLists] = useState(false);
   const [mode, setMode] = useState<"idle" | "demo" | "live">("idle");
+  const [balanceDraft, setBalanceDraft] = useState<Record<string, string>>({});
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [quote, setQuote] = useState("EUR");
   const [investText, setInvestText] = useState("");
@@ -106,6 +107,7 @@ export function Kaufplan() {
   const [listName, setListName] = useState("");
   const [query, setQuery] = useState("");
   const [family, setFamily] = useState<"alle" | Family>("alle");
+  const [listedQuote, setListedQuote] = useState<"alle" | "EUR" | "EURCV">("alle");
   const [draft, setDraft] = useState<{ pair: string; text: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [placing, setPlacing] = useState(false);
@@ -152,16 +154,6 @@ export function Kaufplan() {
     if (confirmOpen) cancelRef.current?.focus();
   }, [confirmOpen]);
 
-  const types = useMemo(() => {
-    const map = new Map<string, string>();
-    const quotes = new Set((snapshot?.instruments ?? []).map((item) => item.quote));
-    for (const instrument of snapshot?.instruments ?? []) {
-      if (!quotes.has(instrument.base)) map.set(instrument.base, instrument.baseType);
-    }
-    for (const code of quotes) map.set(code, "fiat");
-    return map;
-  }, [snapshot]);
-
   const byPair = useMemo(() => {
     const map = new Map<string, NonNullable<Snapshot["instruments"][number]>>();
     for (const instrument of snapshot?.instruments ?? []) map.set(instrument.pair, instrument);
@@ -176,7 +168,9 @@ export function Kaufplan() {
   const catalog = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return (snapshot?.instruments ?? [])
-      .filter((item) => item.quote === quote || item.quote === "EURCV")
+      .filter((item) =>
+        listedQuote === "alle" ? item.quote === quote || item.quote === "EURCV" : item.quote === listedQuote,
+      )
       .filter((item) => (family === "alle" ? true : familyOf(item.baseType) === family))
       .filter((item) => {
         if (!needle) return true;
@@ -187,18 +181,22 @@ export function Kaufplan() {
         );
       })
       .sort((a, b) => num(b.volume) - num(a.volume) || a.base.localeCompare(b.base, "de"));
-  }, [snapshot, quote, family, query]);
+  }, [snapshot, quote, family, query, listedQuote]);
 
   const families = useMemo(() => {
     const present = new Set<Family>();
     for (const item of snapshot?.instruments ?? []) {
-      if (item.quote === quote || item.quote === "EURCV") present.add(familyOf(item.baseType));
+      const shown = listedQuote === "alle" ? item.quote === quote || item.quote === "EURCV" : item.quote === listedQuote;
+      if (shown) present.add(familyOf(item.baseType));
     }
-    return (["krypto", "aktie", "etf", "rohstoff", "sonstige"] as Family[]).filter((key) => present.has(key));
-  }, [snapshot, quote]);
+    return (["aktie", "etf", "rohstoff", "sonstige"] as Family[]).filter((key) => present.has(key));
+  }, [snapshot, quote, listedQuote]);
 
   const balance = snapshot?.balances.find((item) => item.symbol === quote);
-  const available = num(balance?.available);
+  const available =
+    mode === "demo" && balanceDraft[quote] !== undefined
+      ? (parseDecimal(balanceDraft[quote]) ?? 0)
+      : num(balance?.available);
   const locked = num(balance?.locked);
   const invest = parseDecimal(investText);
 
@@ -313,9 +311,13 @@ export function Kaufplan() {
       }
       setSnapshot(result.snapshot);
       setMode("live");
+      setBalanceDraft({});
       setResults([]);
       const options = quoteOptions(result.snapshot.instruments);
-      const nextQuote = options.includes(quote) ? quote : options[0] || "EUR";
+      const nextQuote =
+        mode === "live" && options.includes(quote)
+          ? quote
+          : richestQuote(options, result.snapshot.balances);
       setQuote(nextQuote);
       setSelections((prev) =>
         prev.filter((item) =>
@@ -336,27 +338,54 @@ export function Kaufplan() {
 
   function openDemo() {
     const demo = demoSnapshot();
+    const nextQuote = richestQuote(quoteOptions(demo.instruments), demo.balances);
     setSnapshot(demo);
     setMode("demo");
-    setQuote("EUR");
+    setBalanceDraft({ EUR: "1000", EURCV: "1000", USD: "1000" });
+    setQuote(nextQuote);
     setError("");
     setResults([]);
-      setSelections((prev) =>
-        sortByShare(
-          prev.length > 0
-            ? prev
-            : [
-                { pair: "BTC-EUR", hundredths: 7000 },
-                { pair: "ETH-EUR", hundredths: 3000 },
-              ],
-        ),
-      );
+    setSelections((prev) => {
+      const kept = prev.filter((item) => item.pair.endsWith(`-${nextQuote}`));
+      if (kept.length > 0) return sortByShare(kept);
+      if (nextQuote === "EUR") {
+        return sortByShare([
+          { pair: "BTC-EUR", hundredths: 7000 },
+          { pair: "ETH-EUR", hundredths: 3000 },
+        ]);
+      }
+      const first = demo.instruments.find((item) => item.quote === nextQuote);
+      return first ? [{ pair: first.pair, hundredths: 10000 }] : [];
+    });
     setInvestText((prev) => (prev.trim() ? prev : "1000"));
+  }
+
+  function setDemoBalance(symbol: string, raw: string) {
+    setBalanceDraft((prev) => ({ ...prev, [symbol]: raw }));
+    const parsed = parseDecimal(raw);
+    const next = parsed == null ? "0" : parsed.toFixed(2);
+    setSnapshot((prev) => {
+      if (!prev) return prev;
+      const exists = prev.balances.some((item) => item.symbol === symbol);
+      const balances = exists
+        ? prev.balances.map((item) => (item.symbol === symbol ? { ...item, available: next } : item))
+        : [...prev.balances, { symbol, available: next, locked: "0" }];
+      return { ...prev, balances };
+    });
+  }
+
+  function changeQuote(next: string) {
+    setQuote(next);
+    setSelections((prev) => {
+      const kept = prev.filter((item) => item.pair.endsWith(`-${next}`));
+      return sortByShare(auto ? scaleToFull(kept) : kept);
+    });
   }
 
   function disconnect() {
     setSnapshot(null);
     setMode("idle");
+    setBalanceDraft({});
     setResults([]);
     setError("");
     sessionStorage.removeItem(KEY);
@@ -507,16 +536,10 @@ export function Kaufplan() {
     ...catalog.filter((item) => item.quote !== "EURCV").slice(0, 60),
     ...catalog.filter((item) => item.quote === "EURCV"),
   ];
-  const quoteLabel = [quote, ...new Set(catalog.filter((item) => item.quote !== quote).map((item) => item.quote))].join(
-    " + ",
-  );
-  const fiatBalances = [...(snapshot?.balances ?? [])]
-    .filter((item) => {
-      if (!isFiat(item.symbol, types)) return false;
-      if (item.symbol.toUpperCase() !== "EURCV") return true;
-      return num(item.available) > 0 || num(item.locked) > 0;
-    })
-    .sort((a, b) => a.symbol.localeCompare(b.symbol));
+  const presentQuotes = [...new Set(catalog.map((item) => item.quote))];
+  const quoteLabel = (
+    presentQuotes.includes(quote) ? [quote, ...presentQuotes.filter((code) => code !== quote)] : presentQuotes
+  ).join(" + ");
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-4 py-6 md:px-8 md:py-10">
@@ -674,95 +697,80 @@ export function Kaufplan() {
         ) : null}
         {snapshot?.warning ? <p className="mt-2 text-sm text-brass">{snapshot.warning}</p> : null}
 
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <h3 className="text-xs font-medium text-muted">{t.balances}</h3>
-          {snapshot ? (
-            fiatBalances.length > 0 ? (
-              fiatBalances.map((item) => {
-                const active = item.symbol === quote;
-                return (
-                  <p
-                    key={item.symbol}
-                    className={`inline-flex h-11 items-center gap-2 rounded-lg border px-3 font-mono text-sm ${active ? "border-brass bg-raised" : "border-line"}`}
+        <div className="mt-2 flex flex-col gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <span className="text-sm sm:w-44 sm:shrink-0">{t.balances}</span>
+            {snapshot ? (
+              <div className="flex min-w-0 items-center gap-2 sm:contents">
+                <div className="flex min-w-0 flex-1 gap-2 sm:w-[16.5rem] sm:flex-none">
+                  <label className="sr-only" htmlFor="quote">
+                    {t.currency}
+                  </label>
+                  <select
+                    id="quote"
+                    value={quotes.includes(quote) ? quote : quotes[0]}
+                    onChange={(event) => changeQuote(event.target.value)}
+                    className="h-11 min-w-0 flex-1 rounded-lg border border-line bg-bg px-3 text-fg"
                   >
-                    <span className="text-xs text-muted">{item.symbol}</span>
-                    {formatMoney(num(item.available), item.symbol)}
-                    {num(item.locked) > 0 ? (
-                      <span className="text-xs text-muted">
-                        {t.locked} {formatMoney(num(item.locked), item.symbol)}
-                      </span>
-                    ) : null}
-                  </p>
-                );
-              })
+                    {(quotes.length ? quotes : ["EUR"]).map((code) => (
+                      <option key={code} value={code}>
+                        {code}
+                      </option>
+                    ))}
+                  </select>
+                  {mode === "demo" ? (
+                    <input
+                      id="balance"
+                      inputMode="decimal"
+                      aria-label={`${t.balanceAmount} ${quote}`}
+                      value={balanceDraft[quote] ?? balance?.available ?? "0"}
+                      onChange={(event) => setDemoBalance(quote, event.target.value)}
+                      className="h-11 w-36 shrink-0 rounded-lg border border-line bg-bg px-3 font-mono text-fg"
+                    />
+                  ) : (
+                    <p className="inline-flex h-11 w-36 shrink-0 items-center rounded-lg border border-line px-3 font-mono text-sm">
+                      {formatMoney(available, quote)}
+                    </p>
+                  )}
+                </div>
+                {locked > 0 ? (
+                  <span className="text-xs text-muted">
+                    {t.locked} {formatMoney(locked, quote)}
+                  </span>
+                ) : null}
+              </div>
             ) : (
-              <p className="text-sm text-muted">{t.noFiat}</p>
-            )
-          ) : (
-            <p className="text-sm text-muted">{t.noProfile}</p>
-          )}
-        </div>
-
-        <div className="mt-2 flex flex-col gap-2 xl:flex-row xl:items-center">
-          <label className="flex min-w-0 flex-1 items-center gap-2 text-sm" htmlFor="invest">
-            <span className="shrink-0">{t.invest}</span>
+              <p className="text-sm text-muted">{t.noProfile}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <label className="text-sm sm:flex sm:h-11 sm:w-44 sm:shrink-0 sm:items-center" htmlFor="invest">
+              {t.invest}
+            </label>
             <input
               id="invest"
               inputMode="decimal"
               value={investText}
               onChange={(event) => setInvestText(event.target.value)}
               placeholder={t.investPlaceholder}
-              className="h-11 min-w-0 flex-1 rounded-lg border border-line bg-bg px-3 font-mono text-fg"
+              className="h-11 w-full rounded-lg border border-line bg-bg px-3 font-mono text-fg sm:w-[16.5rem] sm:shrink-0"
             />
-          </label>
-          <label className="flex items-center gap-2 text-sm" htmlFor="quote">
-            <span className="shrink-0">{t.currency}</span>
-            <select
-              id="quote"
-              value={quotes.includes(quote) ? quote : quotes[0]}
-              onChange={(event) => {
-                const next = event.target.value;
-                setQuote(next);
-                setSelections((prev) => {
-                  const kept = prev.filter((item) => item.pair.endsWith(`-${next}`));
-                  return sortByShare(auto ? scaleToFull(kept) : kept);
-                });
-              }}
-              className="h-11 rounded-lg border border-line bg-bg px-3 text-fg"
-            >
-              {(quotes.length ? quotes : ["EUR"]).map((code) => (
-                <option key={code} value={code}>
-                  {code}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="flex min-w-0 flex-1 items-center gap-1">
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              disabled={available <= 0}
-              value={investPct}
-              onChange={(event) => setInvestPercent(Number(event.target.value))}
-              aria-label={t.investPercent}
-              className="h-11 min-w-0 flex-1 accent-primary disabled:opacity-40"
-            />
-            {[0, 25, 50, 75, 100].map((mark) => {
-              const active = Math.abs(investPct - mark) < 0.05;
-              return (
-                <button
-                  key={mark}
-                  type="button"
-                  disabled={available <= 0}
-                  onClick={() => setInvestPercent(mark)}
-                  className={`h-11 min-w-11 shrink-0 font-mono text-xs disabled:opacity-40 ${active ? "text-brass" : "text-muted"}`}
-                >
-                  {mark}%
-                </button>
-              );
-            })}
+            <div className="flex h-11 min-w-0 flex-1 items-center justify-between gap-1">
+              {[0, 25, 50, 75, 100].map((mark) => {
+                const active = Math.abs(investPct - mark) < 0.05;
+                return (
+                  <button
+                    key={mark}
+                    type="button"
+                    disabled={available <= 0}
+                    onClick={() => setInvestPercent(mark)}
+                    className={`h-11 min-w-11 flex-1 font-mono text-xs disabled:opacity-40 ${active ? "text-brass" : "text-muted"}`}
+                  >
+                    {mark}%
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
         {snapshot && balance ? (
@@ -789,8 +797,23 @@ export function Kaufplan() {
               />
             </div>
             <div className="mt-2 flex min-w-0 gap-2 overflow-x-auto">
-              <FilterChip active={family === "alle"} onClick={() => setFamily("alle")}>
+              <FilterChip
+                active={family === "alle" && listedQuote === "alle"}
+                onClick={() => {
+                  setFamily("alle");
+                  setListedQuote("alle");
+                }}
+              >
                 {t.all}
+              </FilterChip>
+              <FilterChip active={listedQuote === "EUR"} onClick={() => setListedQuote((prev) => (prev === "EUR" ? "alle" : "EUR"))}>
+                EUR
+              </FilterChip>
+              <FilterChip
+                active={listedQuote === "EURCV"}
+                onClick={() => setListedQuote((prev) => (prev === "EURCV" ? "alle" : "EURCV"))}
+              >
+                EURCV
               </FilterChip>
               {families.map((key) => (
                 <FilterChip key={key} active={family === key} onClick={() => setFamily(key)}>
@@ -803,7 +826,7 @@ export function Kaufplan() {
                 ? `${t.pairCount(catalog.length, quoteLabel)}${catalog.length > visible.length ? ` · ${t.shown(visible.length)}` : ""}`
                 : t.noConnection}
             </p>
-            <ul className="mt-2 max-h-96 divide-y divide-line overflow-y-auto rounded-lg border border-line">
+            <ul className="mt-2 max-h-96 divide-y divide-line overflow-y-auto rounded-lg border border-line bg-bg">
               {visible.map((item) => {
                 const selected = selections.some((entry) => entry.pair === item.pair);
                 return (
@@ -1056,17 +1079,11 @@ export function Kaufplan() {
 
       <section className="rounded-xl border border-line bg-surface p-4 md:p-5" aria-labelledby="ausfuehrung">
         <SectionTitle id="ausfuehrung" step="03" title={t.fees} />
-        {snapshot ? (
-          <p className="mt-3 font-mono text-sm">
-            {t.currentFee} {formatRate(rate)}
-            {invest != null && invest > 0 ? ` · ${formatMoney(fee, quote)} ${t.onStake}` : ""}
-          </p>
-        ) : null}
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
           <Stat label={t.stake} value={invest != null && invest > 0 ? formatMoney(gross, quote) : "—"} />
           <Stat
-            label={t.fee}
+            label={t.currentFee}
             value={invest != null && invest > 0 ? formatMoney(fee, quote) : "—"}
             hint={snapshot ? formatRate(rate) : undefined}
           />
@@ -1314,7 +1331,7 @@ function Stat({
   emphasis?: boolean;
 }) {
   return (
-    <div className={`rounded-lg border px-3 py-3 ${emphasis ? "border-brass bg-raised" : "border-line"}`}>
+    <div className={`rounded-lg border bg-bg px-3 py-3 ${emphasis ? "border-brass" : "border-line"}`}>
       <p className="text-xs text-muted">
         {label}
         {hint ? ` · ${hint}` : ""}

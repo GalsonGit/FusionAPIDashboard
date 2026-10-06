@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/copy-CywItsl6.js
+//#region node_modules/.nitro/vite/services/ssr/assets/copy-CHj5eqsh.js
 function readLang() {
 	try {
 		return localStorage.getItem("kaufplan.lang") === "en" ? "en" : "de";
@@ -28,6 +28,7 @@ var copy = {
 		disconnect: "Trennen",
 		live: "Live",
 		balances: "Profilguthaben",
+		balanceAmount: "Guthaben",
 		noFiat: "Keine Fiat-Währung.",
 		noProfile: "Noch kein Profil.",
 		locked: "gesperrt",
@@ -74,7 +75,6 @@ var copy = {
 		deleteList: (name) => `${name} löschen`,
 		fees: "Gebühren und Kaufwert",
 		currentFee: "Aktuelle Gebühr",
-		onStake: "auf diesen Einsatz",
 		stake: "Einsatz",
 		fee: "Gebühr",
 		value: "Kaufwert",
@@ -159,6 +159,7 @@ var copy = {
 		disconnect: "Disconnect",
 		live: "Live",
 		balances: "Fiat balances",
+		balanceAmount: "Balance",
 		noFiat: "No fiat balance.",
 		noProfile: "No profile yet.",
 		locked: "locked",
@@ -205,7 +206,6 @@ var copy = {
 		deleteList: (name) => `Delete ${name}`,
 		fees: "Fees and value",
 		currentFee: "Current fee",
-		onStake: "on this amount",
 		stake: "Spend",
 		fee: "Fee",
 		value: "Net value",

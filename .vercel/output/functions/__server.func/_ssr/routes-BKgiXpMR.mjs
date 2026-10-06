@@ -1,9 +1,9 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { b as require_jsx_runtime, q as require_react } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as TSS_SERVER_FUNCTION, r as getServerFnById, t as createServerFn } from "./ssr.mjs";
-import { n as readLang, t as copy } from "./copy-CywItsl6.mjs";
+import { n as readLang, t as copy } from "./copy-CHj5eqsh.mjs";
 import { a as RefreshCw, c as Eye, i as Search, l as EyeOff, n as Unplug, o as LoaderCircle, r as TriangleAlert, s as KeyRound, t as X, u as Check } from "../_libs/lucide-react.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BkD8Vnxo.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BKgiXpMR.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var createSsrRpc = (functionId) => {
@@ -169,11 +169,6 @@ function feeRateFor(account) {
 		rate: FEE_TIERS[0].fee,
 		assumed: true
 	};
-}
-function isFiat(symbol, types) {
-	const code = symbol.toUpperCase();
-	if (FIAT.includes(code)) return true;
-	return (types.get(symbol) ?? types.get(code))?.toLowerCase() === "fiat";
 }
 function num(value) {
 	if (!value) return 0;
@@ -423,6 +418,21 @@ function quoteOptions(instruments) {
 	const rest = [...set].filter((code) => !preferred.includes(code)).sort();
 	return [...preferred, ...rest];
 }
+/** Quote the account holds the most of. Ties keep the option order, so EUR wins equals. */
+function richestQuote(options, balances) {
+	const choices = options.length > 0 ? options : ["EUR"];
+	let best = choices[0];
+	let bestAmount = -1;
+	for (const code of choices) {
+		const row = balances.find((item) => item.symbol.toUpperCase() === code.toUpperCase());
+		const amount = num(row?.available) + num(row?.locked);
+		if (amount > bestAmount) {
+			best = code;
+			bestAmount = amount;
+		}
+	}
+	return best;
+}
 function demoSnapshot() {
 	return {
 		pricesPartial: false,
@@ -430,17 +440,17 @@ function demoSnapshot() {
 		balances: [
 			{
 				symbol: "EUR",
-				available: "2500.00",
+				available: "1000.00",
 				locked: "0.00"
 			},
 			{
 				symbol: "EURCV",
-				available: "480.00",
+				available: "1000.00",
 				locked: "0.00"
 			},
 			{
 				symbol: "USD",
-				available: "120.40",
+				available: "1000.00",
 				locked: "0.00"
 			},
 			{
@@ -581,38 +591,11 @@ function demoSnapshot() {
 			[
 				"PAXG",
 				"PAX Gold",
-				"commodity",
+				"cryptocoin",
 				"2348",
 				27e3,
 				25,
 				62e7
-			],
-			[
-				"AAPL",
-				"Apple",
-				"equity_security",
-				"198.4",
-				54e3,
-				25,
-				3e12
-			],
-			[
-				"ASML",
-				"ASML Holding",
-				"equity_security",
-				"742",
-				31e3,
-				50,
-				29e10
-			],
-			[
-				"VWCE",
-				"Vanguard FTSE All-World",
-				"etf",
-				"128.6",
-				18e3,
-				25,
-				18e9
 			]
 		].flatMap(([base, name, type, price, volume, min, marketCap]) => {
 			const row = {
@@ -686,6 +669,7 @@ function Kaufplan() {
 	const [remember, setRemember] = (0, import_react.useState)(false);
 	const [rememberLists, setRememberLists] = (0, import_react.useState)(false);
 	const [mode, setMode] = (0, import_react.useState)("idle");
+	const [balanceDraft, setBalanceDraft] = (0, import_react.useState)({});
 	const [snapshot, setSnapshot] = (0, import_react.useState)(null);
 	const [quote, setQuote] = (0, import_react.useState)("EUR");
 	const [investText, setInvestText] = (0, import_react.useState)("");
@@ -696,6 +680,7 @@ function Kaufplan() {
 	const [listName, setListName] = (0, import_react.useState)("");
 	const [query, setQuery] = (0, import_react.useState)("");
 	const [family, setFamily] = (0, import_react.useState)("alle");
+	const [listedQuote, setListedQuote] = (0, import_react.useState)("alle");
 	const [draft, setDraft] = (0, import_react.useState)(null);
 	const [loading, setLoading] = (0, import_react.useState)(false);
 	const [placing, setPlacing] = (0, import_react.useState)(false);
@@ -735,13 +720,6 @@ function Kaufplan() {
 	(0, import_react.useEffect)(() => {
 		if (confirmOpen) cancelRef.current?.focus();
 	}, [confirmOpen]);
-	const types = (0, import_react.useMemo)(() => {
-		const map = /* @__PURE__ */ new Map();
-		const quotes = new Set((snapshot?.instruments ?? []).map((item) => item.quote));
-		for (const instrument of snapshot?.instruments ?? []) if (!quotes.has(instrument.base)) map.set(instrument.base, instrument.baseType);
-		for (const code of quotes) map.set(code, "fiat");
-		return map;
-	}, [snapshot]);
 	const byPair = (0, import_react.useMemo)(() => {
 		const map = /* @__PURE__ */ new Map();
 		for (const instrument of snapshot?.instruments ?? []) map.set(instrument.pair, instrument);
@@ -750,7 +728,7 @@ function Kaufplan() {
 	const quotes = (0, import_react.useMemo)(() => snapshot ? quoteOptions(snapshot.instruments) : ["EUR"], [snapshot]);
 	const catalog = (0, import_react.useMemo)(() => {
 		const needle = query.trim().toLowerCase();
-		return (snapshot?.instruments ?? []).filter((item) => item.quote === quote || item.quote === "EURCV").filter((item) => family === "alle" ? true : familyOf(item.baseType) === family).filter((item) => {
+		return (snapshot?.instruments ?? []).filter((item) => listedQuote === "alle" ? item.quote === quote || item.quote === "EURCV" : item.quote === listedQuote).filter((item) => family === "alle" ? true : familyOf(item.baseType) === family).filter((item) => {
 			if (!needle) return true;
 			return item.base.toLowerCase().includes(needle) || item.name.toLowerCase().includes(needle) || item.pair.toLowerCase().includes(needle);
 		}).sort((a, b) => num(b.volume) - num(a.volume) || a.base.localeCompare(b.base, "de"));
@@ -758,21 +736,25 @@ function Kaufplan() {
 		snapshot,
 		quote,
 		family,
-		query
+		query,
+		listedQuote
 	]);
 	const families = (0, import_react.useMemo)(() => {
 		const present = /* @__PURE__ */ new Set();
-		for (const item of snapshot?.instruments ?? []) if (item.quote === quote || item.quote === "EURCV") present.add(familyOf(item.baseType));
+		for (const item of snapshot?.instruments ?? []) if (listedQuote === "alle" ? item.quote === quote || item.quote === "EURCV" : item.quote === listedQuote) present.add(familyOf(item.baseType));
 		return [
-			"krypto",
 			"aktie",
 			"etf",
 			"rohstoff",
 			"sonstige"
 		].filter((key) => present.has(key));
-	}, [snapshot, quote]);
+	}, [
+		snapshot,
+		quote,
+		listedQuote
+	]);
 	const balance = snapshot?.balances.find((item) => item.symbol === quote);
-	const available = num(balance?.available);
+	const available = mode === "demo" && balanceDraft[quote] !== void 0 ? parseDecimal(balanceDraft[quote]) ?? 0 : num(balance?.available);
 	const locked = num(balance?.locked);
 	const invest = parseDecimal(investText);
 	function setInvestFromNumber(amount) {
@@ -882,9 +864,10 @@ function Kaufplan() {
 			}
 			setSnapshot(result.snapshot);
 			setMode("live");
+			setBalanceDraft({});
 			setResults([]);
 			const options = quoteOptions(result.snapshot.instruments);
-			const nextQuote = options.includes(quote) ? quote : options[0] || "EUR";
+			const nextQuote = mode === "live" && options.includes(quote) ? quote : richestQuote(options, result.snapshot.balances);
 			setQuote(nextQuote);
 			setSelections((prev) => prev.filter((item) => result.snapshot.instruments.some((instrument) => instrument.pair === item.pair && instrument.quote === nextQuote)));
 			sessionStorage.setItem(KEY, trimmed);
@@ -898,23 +881,69 @@ function Kaufplan() {
 	}
 	function openDemo() {
 		const demo = demoSnapshot();
+		const nextQuote = richestQuote(quoteOptions(demo.instruments), demo.balances);
 		setSnapshot(demo);
 		setMode("demo");
-		setQuote("EUR");
+		setBalanceDraft({
+			EUR: "1000",
+			EURCV: "1000",
+			USD: "1000"
+		});
+		setQuote(nextQuote);
 		setError("");
 		setResults([]);
-		setSelections((prev) => sortByShare(prev.length > 0 ? prev : [{
-			pair: "BTC-EUR",
-			hundredths: 7e3
-		}, {
-			pair: "ETH-EUR",
-			hundredths: 3e3
-		}]));
+		setSelections((prev) => {
+			const kept = prev.filter((item) => item.pair.endsWith(`-${nextQuote}`));
+			if (kept.length > 0) return sortByShare(kept);
+			if (nextQuote === "EUR") return sortByShare([{
+				pair: "BTC-EUR",
+				hundredths: 7e3
+			}, {
+				pair: "ETH-EUR",
+				hundredths: 3e3
+			}]);
+			const first = demo.instruments.find((item) => item.quote === nextQuote);
+			return first ? [{
+				pair: first.pair,
+				hundredths: 1e4
+			}] : [];
+		});
 		setInvestText((prev) => prev.trim() ? prev : "1000");
+	}
+	function setDemoBalance(symbol, raw) {
+		setBalanceDraft((prev) => ({
+			...prev,
+			[symbol]: raw
+		}));
+		const parsed = parseDecimal(raw);
+		const next = parsed == null ? "0" : parsed.toFixed(2);
+		setSnapshot((prev) => {
+			if (!prev) return prev;
+			const balances = prev.balances.some((item) => item.symbol === symbol) ? prev.balances.map((item) => item.symbol === symbol ? {
+				...item,
+				available: next
+			} : item) : [...prev.balances, {
+				symbol,
+				available: next,
+				locked: "0"
+			}];
+			return {
+				...prev,
+				balances
+			};
+		});
+	}
+	function changeQuote(next) {
+		setQuote(next);
+		setSelections((prev) => {
+			const kept = prev.filter((item) => item.pair.endsWith(`-${next}`));
+			return sortByShare(auto ? scaleToFull(kept) : kept);
+		});
 	}
 	function disconnect() {
 		setSnapshot(null);
 		setMode("idle");
+		setBalanceDraft({});
 		setResults([]);
 		setError("");
 		sessionStorage.removeItem(KEY);
@@ -1065,12 +1094,8 @@ function Kaufplan() {
 		}
 	}
 	const visible = [...catalog.filter((item) => item.quote !== "EURCV").slice(0, 60), ...catalog.filter((item) => item.quote === "EURCV")];
-	const quoteLabel = [quote, ...new Set(catalog.filter((item) => item.quote !== quote).map((item) => item.quote))].join(" + ");
-	const fiatBalances = [...snapshot?.balances ?? []].filter((item) => {
-		if (!isFiat(item.symbol, types)) return false;
-		if (item.symbol.toUpperCase() !== "EURCV") return true;
-		return num(item.available) > 0 || num(item.locked) > 0;
-	}).sort((a, b) => a.symbol.localeCompare(b.symbol));
+	const presentQuotes = [...new Set(catalog.map((item) => item.quote))];
+	const quoteLabel = (presentQuotes.includes(quote) ? [quote, ...presentQuotes.filter((code) => code !== quote)] : presentQuotes).join(" + ");
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", {
 		className: "mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-4 py-6 md:px-8 md:py-10",
 		children: [
@@ -1242,110 +1267,93 @@ function Kaufplan() {
 						children: snapshot.warning
 					}) : null,
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "mt-2 flex flex-wrap items-center gap-2",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", {
-							className: "text-xs font-medium text-muted",
-							children: t.balances
-						}), snapshot ? fiatBalances.length > 0 ? fiatBalances.map((item) => {
-							const active = item.symbol === quote;
-							return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-								className: `inline-flex h-11 items-center gap-2 rounded-lg border px-3 font-mono text-sm ${active ? "border-brass bg-raised" : "border-line"}`,
-								children: [
-									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										className: "text-xs text-muted",
-										children: item.symbol
-									}),
-									formatMoney(num(item.available), item.symbol),
-									num(item.locked) > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
-										className: "text-xs text-muted",
-										children: [
-											t.locked,
-											" ",
-											formatMoney(num(item.locked), item.symbol)
-										]
-									}) : null
-								]
-							}, item.symbol);
-						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-muted",
-							children: t.noFiat
-						}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-							className: "text-sm text-muted",
-							children: t.noProfile
-						})]
-					}),
-					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "mt-2 flex flex-col gap-2 xl:flex-row xl:items-center",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
-								className: "flex min-w-0 flex-1 items-center gap-2 text-sm",
-								htmlFor: "invest",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "shrink-0",
+						className: "mt-2 flex flex-col gap-2",
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col gap-2 sm:flex-row sm:items-center",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "text-sm sm:w-44 sm:shrink-0",
+								children: t.balances
+							}), snapshot ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+								className: "flex min-w-0 items-center gap-2 sm:contents",
+								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+									className: "flex min-w-0 flex-1 gap-2 sm:w-[16.5rem] sm:flex-none",
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+											className: "sr-only",
+											htmlFor: "quote",
+											children: t.currency
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
+											id: "quote",
+											value: quotes.includes(quote) ? quote : quotes[0],
+											onChange: (event) => changeQuote(event.target.value),
+											className: "h-11 min-w-0 flex-1 rounded-lg border border-line bg-bg px-3 text-fg",
+											children: (quotes.length ? quotes : ["EUR"]).map((code) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
+												value: code,
+												children: code
+											}, code))
+										}),
+										mode === "demo" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+											id: "balance",
+											inputMode: "decimal",
+											"aria-label": `${t.balanceAmount} ${quote}`,
+											value: balanceDraft[quote] ?? balance?.available ?? "0",
+											onChange: (event) => setDemoBalance(quote, event.target.value),
+											className: "h-11 w-36 shrink-0 rounded-lg border border-line bg-bg px-3 font-mono text-fg"
+										}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+											className: "inline-flex h-11 w-36 shrink-0 items-center rounded-lg border border-line px-3 font-mono text-sm",
+											children: formatMoney(available, quote)
+										})
+									]
+								}), locked > 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", {
+									className: "text-xs text-muted",
+									children: [
+										t.locked,
+										" ",
+										formatMoney(locked, quote)
+									]
+								}) : null]
+							}) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
+								className: "text-sm text-muted",
+								children: t.noProfile
+							})]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
+							className: "flex flex-col gap-2 sm:flex-row sm:items-center",
+							children: [
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("label", {
+									className: "text-sm sm:flex sm:h-11 sm:w-44 sm:shrink-0 sm:items-center",
+									htmlFor: "invest",
 									children: t.invest
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 									id: "invest",
 									inputMode: "decimal",
 									value: investText,
 									onChange: (event) => setInvestText(event.target.value),
 									placeholder: t.investPlaceholder,
-									className: "h-11 min-w-0 flex-1 rounded-lg border border-line bg-bg px-3 font-mono text-fg"
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
-								className: "flex items-center gap-2 text-sm",
-								htmlFor: "quote",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-									className: "shrink-0",
-									children: t.currency
-								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", {
-									id: "quote",
-									value: quotes.includes(quote) ? quote : quotes[0],
-									onChange: (event) => {
-										const next = event.target.value;
-										setQuote(next);
-										setSelections((prev) => {
-											const kept = prev.filter((item) => item.pair.endsWith(`-${next}`));
-											return sortByShare(auto ? scaleToFull(kept) : kept);
-										});
-									},
-									className: "h-11 rounded-lg border border-line bg-bg px-3 text-fg",
-									children: (quotes.length ? quotes : ["EUR"]).map((code) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", {
-										value: code,
-										children: code
-									}, code))
-								})]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-								className: "flex min-w-0 flex-1 items-center gap-1",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-									type: "range",
-									min: 0,
-									max: 100,
-									step: 1,
-									disabled: available <= 0,
-									value: investPct,
-									onChange: (event) => setInvestPercent(Number(event.target.value)),
-									"aria-label": t.investPercent,
-									className: "h-11 min-w-0 flex-1 accent-primary disabled:opacity-40"
-								}), [
-									0,
-									25,
-									50,
-									75,
-									100
-								].map((mark) => {
-									const active = Math.abs(investPct - mark) < .05;
-									return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-										type: "button",
-										disabled: available <= 0,
-										onClick: () => setInvestPercent(mark),
-										className: `h-11 min-w-11 shrink-0 font-mono text-xs disabled:opacity-40 ${active ? "text-brass" : "text-muted"}`,
-										children: [mark, "%"]
-									}, mark);
-								})]
-							})
-						]
+									className: "h-11 w-full rounded-lg border border-line bg-bg px-3 font-mono text-fg sm:w-[16.5rem] sm:shrink-0"
+								}),
+								/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+									className: "flex h-11 min-w-0 flex-1 items-center justify-between gap-1",
+									children: [
+										0,
+										25,
+										50,
+										75,
+										100
+									].map((mark) => {
+										const active = Math.abs(investPct - mark) < .05;
+										return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+											type: "button",
+											disabled: available <= 0,
+											onClick: () => setInvestPercent(mark),
+											className: `h-11 min-w-11 flex-1 font-mono text-xs disabled:opacity-40 ${active ? "text-brass" : "text-muted"}`,
+											children: [mark, "%"]
+										}, mark);
+									})
+								})
+							]
+						})]
 					}),
 					snapshot && balance ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 						className: "mt-1 font-mono text-xs text-muted",
@@ -1383,22 +1391,38 @@ function Kaufplan() {
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								className: "mt-2 flex min-w-0 gap-2 overflow-x-auto",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FilterChip, {
-									active: family === "alle",
-									onClick: () => setFamily("alle"),
-									children: t.all
-								}), families.map((key) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FilterChip, {
-									active: family === key,
-									onClick: () => setFamily(key),
-									children: t.families[key] ?? key
-								}, key))]
+								children: [
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FilterChip, {
+										active: family === "alle" && listedQuote === "alle",
+										onClick: () => {
+											setFamily("alle");
+											setListedQuote("alle");
+										},
+										children: t.all
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FilterChip, {
+										active: listedQuote === "EUR",
+										onClick: () => setListedQuote((prev) => prev === "EUR" ? "alle" : "EUR"),
+										children: "EUR"
+									}),
+									/* @__PURE__ */ (0, import_jsx_runtime.jsx)(FilterChip, {
+										active: listedQuote === "EURCV",
+										onClick: () => setListedQuote((prev) => prev === "EURCV" ? "alle" : "EURCV"),
+										children: "EURCV"
+									}),
+									families.map((key) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(FilterChip, {
+										active: family === key,
+										onClick: () => setFamily(key),
+										children: t.families[key] ?? key
+									}, key))
+								]
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 								className: "mt-2 text-xs text-muted",
 								children: snapshot ? `${t.pairCount(catalog.length, quoteLabel)}${catalog.length > visible.length ? ` · ${t.shown(visible.length)}` : ""}` : t.noConnection
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("ul", {
-								className: "mt-2 max-h-96 divide-y divide-line overflow-y-auto rounded-lg border border-line",
+								className: "mt-2 max-h-96 divide-y divide-line overflow-y-auto rounded-lg border border-line bg-bg",
 								children: [
 									visible.map((item) => {
 										const selected = selections.some((entry) => entry.pair === item.pair);
@@ -1697,24 +1721,15 @@ function Kaufplan() {
 						step: "03",
 						title: t.fees
 					}),
-					snapshot ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-						className: "mt-3 font-mono text-sm",
-						children: [
-							t.currentFee,
-							" ",
-							formatRate(rate),
-							invest != null && invest > 0 ? ` · ${formatMoney(fee, quote)} ${t.onStake}` : ""
-						]
-					}) : null,
 					/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-						className: "mt-5 grid gap-3 sm:grid-cols-3",
+						className: "mt-4 grid gap-3 sm:grid-cols-3",
 						children: [
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Stat, {
 								label: t.stake,
 								value: invest != null && invest > 0 ? formatMoney(gross, quote) : "—"
 							}),
 							/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Stat, {
-								label: t.fee,
+								label: t.currentFee,
 								value: invest != null && invest > 0 ? formatMoney(fee, quote) : "—",
 								hint: snapshot ? formatRate(rate) : void 0
 							}),
@@ -2014,7 +2029,7 @@ function FilterChip({ active, onClick, children }) {
 }
 function Stat({ label, value, hint, emphasis }) {
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: `rounded-lg border px-3 py-3 ${emphasis ? "border-brass bg-raised" : "border-line"}`,
+		className: `rounded-lg border bg-bg px-3 py-3 ${emphasis ? "border-brass" : "border-line"}`,
 		children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
 			className: "text-xs text-muted",
 			children: [label, hint ? ` · ${hint}` : ""]

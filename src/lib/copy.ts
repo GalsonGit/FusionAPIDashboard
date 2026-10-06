@@ -31,6 +31,7 @@ type Copy = {
   disconnect: string;
   live: string;
   balances: string;
+  balanceAmount: string;
   noFiat: string;
   noProfile: string;
   locked: string;
@@ -71,7 +72,6 @@ type Copy = {
   deleteList: (name: string) => string;
   fees: string;
   currentFee: string;
-  onStake: string;
   stake: string;
   fee: string;
   value: string;
@@ -151,6 +151,7 @@ export const copy: Record<Lang, Copy> = {
     disconnect: "Trennen",
     live: "Live",
     balances: "Profilguthaben",
+    balanceAmount: "Guthaben",
     noFiat: "Keine Fiat-Währung.",
     noProfile: "Noch kein Profil.",
     locked: "gesperrt",
@@ -191,7 +192,6 @@ export const copy: Record<Lang, Copy> = {
     deleteList: (name) => `${name} löschen`,
     fees: "Gebühren und Kaufwert",
     currentFee: "Aktuelle Gebühr",
-    onStake: "auf diesen Einsatz",
     stake: "Einsatz",
     fee: "Gebühr",
     value: "Kaufwert",
@@ -276,6 +276,7 @@ export const copy: Record<Lang, Copy> = {
     disconnect: "Disconnect",
     live: "Live",
     balances: "Fiat balances",
+    balanceAmount: "Balance",
     noFiat: "No fiat balance.",
     noProfile: "No profile yet.",
     locked: "locked",
@@ -316,7 +317,6 @@ export const copy: Record<Lang, Copy> = {
     deleteList: (name) => `Delete ${name}`,
     fees: "Fees and value",
     currentFee: "Current fee",
-    onStake: "on this amount",
     stake: "Spend",
     fee: "Fee",
     value: "Net value",

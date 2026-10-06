@@ -460,6 +460,22 @@ export function quoteOptions(instruments: Instrument[]): string[] {
   return [...preferred, ...rest];
 }
 
+/** Quote the account holds the most of. Ties keep the option order, so EUR wins equals. */
+export function richestQuote(options: string[], balances: Balance[]): string {
+  const choices = options.length > 0 ? options : ["EUR"];
+  let best = choices[0];
+  let bestAmount = -1;
+  for (const code of choices) {
+    const row = balances.find((item) => item.symbol.toUpperCase() === code.toUpperCase());
+    const amount = num(row?.available) + num(row?.locked);
+    if (amount > bestAmount) {
+      best = code;
+      bestAmount = amount;
+    }
+  }
+  return best;
+}
+
 export function demoSnapshot(): Snapshot {
   const rows: Array<[string, string, string, string, number, number, number]> = [
     ["BTC", "Bitcoin", "cryptocoin", "61500", 842000, 25, 1_210_000_000_000],
@@ -474,18 +490,15 @@ export function demoSnapshot(): Snapshot {
     ["UNI", "Uniswap", "cryptocoin", "7.4", 15000, 25, 4_500_000_000],
     ["ATOM", "Cosmos", "cryptocoin", "5.1", 9000, 25, 2_000_000_000],
     ["NEAR", "NEAR Protocol", "cryptocoin", "3.35", 11000, 25, 3_800_000_000],
-    ["PAXG", "PAX Gold", "commodity", "2348", 27000, 25, 620_000_000],
-    ["AAPL", "Apple", "equity_security", "198.4", 54000, 25, 3_000_000_000_000],
-    ["ASML", "ASML Holding", "equity_security", "742", 31000, 50, 290_000_000_000],
-    ["VWCE", "Vanguard FTSE All-World", "etf", "128.6", 18000, 25, 18_000_000_000],
+    ["PAXG", "PAX Gold", "cryptocoin", "2348", 27000, 25, 620_000_000],
   ];
   return {
     pricesPartial: false,
     warning: null,
     balances: [
-      { symbol: "EUR", available: "2500.00", locked: "0.00" },
-      { symbol: "EURCV", available: "480.00", locked: "0.00" },
-      { symbol: "USD", available: "120.40", locked: "0.00" },
+      { symbol: "EUR", available: "1000.00", locked: "0.00" },
+      { symbol: "EURCV", available: "1000.00", locked: "0.00" },
+      { symbol: "USD", available: "1000.00", locked: "0.00" },
       { symbol: "BTC", available: "0.0142", locked: "0" },
       { symbol: "ETH", available: "0.35", locked: "0" },
     ],
