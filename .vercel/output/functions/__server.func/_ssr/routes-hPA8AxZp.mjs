@@ -1,9 +1,9 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { b as require_jsx_runtime, q as require_react } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as TSS_SERVER_FUNCTION, r as getServerFnById, t as createServerFn } from "./ssr.mjs";
-import { n as readLang, t as copy } from "./copy-B12x_1su.mjs";
+import { n as readLang, t as copy } from "./copy-CHsjQafh.mjs";
 import { a as RefreshCw, c as Eye, i as Search, l as EyeOff, n as Unplug, o as LoaderCircle, r as TriangleAlert, s as KeyRound, t as X, u as Check } from "../_libs/lucide-react.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-BQbUyxBZ.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-hPA8AxZp.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var createSsrRpc = (functionId) => {
@@ -1243,7 +1243,7 @@ function Kaufplan() {
 									"aria-pressed": mode === "live",
 									disabled: loading || apiKey.trim().length < 8,
 									className: `inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 font-medium disabled:opacity-50 sm:flex-none ${mode === "live" ? "border-primary bg-primary text-primary-fg" : "border-line bg-bg text-fg"}`,
-									children: [loading ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "size-4 animate-spin motion-reduce:animate-none" }) : null, loading ? t.connecting : t.connect]
+									children: [loading && mode !== "live" ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "size-4 animate-spin motion-reduce:animate-none" }) : null, loading && mode !== "live" ? t.connecting : mode === "live" ? t.connected : t.connect]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 									type: "button",
 									"aria-pressed": mode === "demo",
@@ -1270,25 +1270,18 @@ function Kaufplan() {
 					}) : null,
 					mode === "live" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 						className: "mt-2 flex flex-wrap items-center gap-2",
-						children: [
-							/* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
-								className: "inline-flex h-11 items-center rounded-lg border border-line bg-raised px-3 text-sm text-ok",
-								children: t.live
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-								type: "button",
-								onClick: () => void connect(),
-								disabled: loading,
-								className: "inline-flex h-11 items-center gap-2 rounded-lg border border-line px-3 text-sm",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: "size-4" }), t.refresh]
-							}),
-							/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
-								type: "button",
-								onClick: disconnect,
-								className: "inline-flex h-11 items-center gap-2 rounded-lg border border-line px-3 text-sm",
-								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Unplug, { className: "size-4" }), t.disconnect]
-							})
-						]
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							type: "button",
+							onClick: () => void connect(),
+							disabled: loading,
+							className: "inline-flex h-11 items-center gap-2 rounded-lg border border-line px-3 text-sm",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RefreshCw, { className: "size-4" }), t.refresh]
+						}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
+							type: "button",
+							onClick: disconnect,
+							className: "inline-flex h-11 items-center gap-2 rounded-lg border border-line px-3 text-sm",
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Unplug, { className: "size-4" }), t.disconnect]
+						})]
 					}) : null,
 					snapshot?.warning ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", {
 						className: "mt-2 text-sm text-brass",

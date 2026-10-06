@@ -24,12 +24,12 @@ type Copy = {
   clearKey: string;
   connect: string;
   connecting: string;
+  connected: string;
   demo: string;
   remember: string;
   rememberLists: string;
   refresh: string;
   disconnect: string;
-  live: string;
   balances: string;
   balanceAmount: string;
   noFiat: string;
@@ -143,12 +143,12 @@ export const copy: Record<Lang, Copy> = {
     clearKey: "Schlüssel leeren",
     connect: "Verbinden",
     connecting: "Verbinde",
+    connected: "Verbunden",
     demo: "Demo",
     remember: "Schlüssel auf diesem Gerät merken",
     rememberLists: "Listen auf diesem Gerät merken",
     refresh: "Aktualisieren",
     disconnect: "Trennen",
-    live: "Live",
     balances: "Profilguthaben",
     balanceAmount: "Guthaben",
     noFiat: "Keine Fiat-Währung.",
@@ -267,12 +267,12 @@ export const copy: Record<Lang, Copy> = {
     clearKey: "Clear key",
     connect: "Connect",
     connecting: "Connecting",
+    connected: "Connected",
     demo: "Demo",
     remember: "Remember key on this device",
     rememberLists: "Remember lists on this device",
     refresh: "Refresh",
     disconnect: "Disconnect",
-    live: "Live",
     balances: "Fiat balances",
     balanceAmount: "Balance",
     noFiat: "No fiat balance.",

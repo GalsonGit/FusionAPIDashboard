@@ -666,8 +666,8 @@ export function Kaufplan() {
               disabled={loading || apiKey.trim().length < 8}
               className={`inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 font-medium disabled:opacity-50 sm:flex-none ${mode === "live" ? "border-primary bg-primary text-primary-fg" : "border-line bg-bg text-fg"}`}
             >
-              {loading ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" /> : null}
-              {loading ? t.connecting : t.connect}
+              {loading && mode !== "live" ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" /> : null}
+              {loading && mode !== "live" ? t.connecting : mode === "live" ? t.connected : t.connect}
             </button>
             <button
               type="button"
@@ -696,9 +696,6 @@ export function Kaufplan() {
         ) : null}
         {mode === "live" ? (
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <p className="inline-flex h-11 items-center rounded-lg border border-line bg-raised px-3 text-sm text-ok">
-              {t.live}
-            </p>
             <button
               type="button"
               onClick={() => void connect()}

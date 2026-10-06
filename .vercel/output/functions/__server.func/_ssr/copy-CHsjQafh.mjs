@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/copy-B12x_1su.js
+//#region node_modules/.nitro/vite/services/ssr/assets/copy-CHsjQafh.js
 function readLang() {
 	try {
 		return localStorage.getItem("kaufplan.lang") === "en" ? "en" : "de";
@@ -21,12 +21,12 @@ var copy = {
 		clearKey: "Schlüssel leeren",
 		connect: "Verbinden",
 		connecting: "Verbinde",
+		connected: "Verbunden",
 		demo: "Demo",
 		remember: "Schlüssel auf diesem Gerät merken",
 		rememberLists: "Listen auf diesem Gerät merken",
 		refresh: "Aktualisieren",
 		disconnect: "Trennen",
-		live: "Live",
 		balances: "Profilguthaben",
 		balanceAmount: "Guthaben",
 		noFiat: "Keine Fiat-Währung.",
@@ -151,12 +151,12 @@ var copy = {
 		clearKey: "Clear key",
 		connect: "Connect",
 		connecting: "Connecting",
+		connected: "Connected",
 		demo: "Demo",
 		remember: "Remember key on this device",
 		rememberLists: "Remember lists on this device",
 		refresh: "Refresh",
 		disconnect: "Disconnect",
-		live: "Live",
 		balances: "Fiat balances",
 		balanceAmount: "Balance",
 		noFiat: "No fiat balance.",
