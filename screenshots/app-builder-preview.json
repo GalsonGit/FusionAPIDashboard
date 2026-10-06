@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "API-Trading Dashboard",
+      "hasCanvas": false,
+      "bodyTextLen": 579,
+      "bodyTextHash": "771b8bcbc4914553d063271a756981993c21b0d143d3f9df191b50f8bc9103e4",
+      "bodyTextPrefix": "Bitpanda Fusion API-Trading Dashboard DE EN 01 Konto Fusion-API-",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "API-Trading Dashboard",
+      "hasCanvas": false,
+      "bodyTextLen": 579,
+      "bodyTextHash": "771b8bcbc4914553d063271a756981993c21b0d143d3f9df191b50f8bc9103e4",
+      "bodyTextPrefix": "Bitpanda Fusion API-Trading Dashboard DE EN 01 Konto Fusion-API-",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
