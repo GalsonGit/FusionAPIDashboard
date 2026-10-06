@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fusion Kaufplan</title>
+  <style>
+    :root { color-scheme: dark; --bg: #12140f; --card: #1c1f16; --line: #343828; --text: #f3f0e6; --muted: #b7b29f; --brass: #d7b15a; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Georgia, "Times New Roman", serif; background: var(--bg); color: var(--text); }
+    main { max-width: 720px; margin: 0 auto; padding: 48px 20px 72px; }
+    h1 { font-weight: 500; font-size: 2.4rem; margin: 0 0 8px; }
+    p { color: var(--muted); line-height: 1.5; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin-top: 24px; }
+    label { display: block; font-size: 0.85rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    input { width: 100%; background: #10130c; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 1.1rem; }
+    ul { list-style: none; padding: 0; margin: 16px 0 0; }
+    li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+    a { color: var(--brass); }
+    .note { font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Fusion Kaufplan</h1>
+    <p>Statische GitHub-Pages-Seite. Die volle App mit API-Key, Kontostand und echten Orders läuft hier nicht, weil dafür ein Server nötig ist.</p>
+    <div class="card">
+      <label for="amount">Einsatz in EUR, nur Vorschau</label>
+      <input id="amount" inputmode="decimal" value="1000" />
+      <ul id="legs"></ul>
+    </div>
+    <p class="note">Repo: <a href="https://github.com/GalsonGit/FusionAPIDashboard">GalsonGit/FusionAPIDashboard</a></p>
+  </main>
+  <script>
+    const legs = [
+      ["BTC-EUR", 0.7],
+      ["ETH-EUR", 0.3]
+    ];
+    const amount = document.getElementById("amount");
+    const list = document.getElementById("legs");
+    function render() {
+      const value = Number(String(amount.value).replace(",", ".")) || 0;
+      list.innerHTML = legs.map(([pair, share]) => {
+        const euro = (value * share).toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+        return "<li><span>" + pair + " · " + Math.round(share * 100) + "%</span><strong>" + euro + "</strong></li>";
+      }).join("");
+    }
+    amount.addEventListener("input", render);
+    render();
+  </script>
+</body>
+</html>
