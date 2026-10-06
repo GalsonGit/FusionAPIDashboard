@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/copy-BcDKeA62.js
+//#region node_modules/.nitro/vite/services/ssr/assets/copy-BJfp-8u5.js
 function readLang() {
 	try {
 		return localStorage.getItem("kaufplan.lang") === "en" ? "en" : "de";
@@ -15,6 +15,7 @@ var copy = {
 		keyPlaceholder: "Fusion-Schlüssel",
 		showKey: "Schlüssel zeigen",
 		hideKey: "Schlüssel verbergen",
+		clearKey: "Schlüssel leeren",
 		connect: "Verbinden",
 		connecting: "Verbinde",
 		demo: "Demo",
@@ -142,6 +143,7 @@ var copy = {
 		keyPlaceholder: "Fusion key",
 		showKey: "Show key",
 		hideKey: "Hide key",
+		clearKey: "Clear key",
 		connect: "Connect",
 		connecting: "Connecting",
 		demo: "Demo",

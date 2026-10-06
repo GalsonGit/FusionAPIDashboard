@@ -550,8 +550,22 @@ export function Kaufplan() {
               autoComplete="off"
               spellCheck={false}
               placeholder={t.key}
-              className="h-11 w-full rounded-lg border border-line bg-bg pr-12 pl-10 text-fg"
+              className="h-11 w-full rounded-lg border border-line bg-bg pr-20 pl-10 text-fg"
             />
+            {apiKey ? (
+              <button
+                type="button"
+                className="absolute top-1 right-10 inline-flex size-9 items-center justify-center rounded-lg text-muted"
+                onClick={() => {
+                  setApiKey("");
+                  sessionStorage.removeItem(KEY);
+                  localStorage.removeItem(KEY);
+                }}
+                aria-label={t.clearKey}
+              >
+                <X className="size-4" />
+              </button>
+            ) : null}
             <button
               type="button"
               className="absolute top-1 right-1 inline-flex size-9 items-center justify-center rounded-lg text-muted"

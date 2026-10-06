@@ -1,9 +1,9 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { b as require_jsx_runtime, q as require_react } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as TSS_SERVER_FUNCTION, r as getServerFnById, t as createServerFn } from "./ssr.mjs";
-import { n as readLang, t as copy } from "./copy-BcDKeA62.mjs";
+import { n as readLang, t as copy } from "./copy-BJfp-8u5.mjs";
 import { a as RefreshCw, c as Eye, i as Search, l as EyeOff, n as Unplug, o as LoaderCircle, r as TriangleAlert, s as KeyRound, t as X, u as Check } from "../_libs/lucide-react.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-vSwT0WpQ.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-B-R1K34D.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var createSsrRpc = (functionId) => {
@@ -1109,8 +1109,19 @@ function Kaufplan() {
 										autoComplete: "off",
 										spellCheck: false,
 										placeholder: t.key,
-										className: "h-11 w-full rounded-lg border border-line bg-bg pr-12 pl-10 text-fg"
+										className: "h-11 w-full rounded-lg border border-line bg-bg pr-20 pl-10 text-fg"
 									}),
+									apiKey ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+										type: "button",
+										className: "absolute top-1 right-10 inline-flex size-9 items-center justify-center rounded-lg text-muted",
+										onClick: () => {
+											setApiKey("");
+											sessionStorage.removeItem(KEY);
+											localStorage.removeItem(KEY);
+										},
+										"aria-label": t.clearKey,
+										children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(X, { className: "size-4" })
+									}) : null,
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 										type: "button",
 										className: "absolute top-1 right-1 inline-flex size-9 items-center justify-center rounded-lg text-muted",

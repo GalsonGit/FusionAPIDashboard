@@ -18,6 +18,7 @@ type Copy = {
   keyPlaceholder: string;
   showKey: string;
   hideKey: string;
+  clearKey: string;
   connect: string;
   connecting: string;
   demo: string;
@@ -134,6 +135,7 @@ export const copy: Record<Lang, Copy> = {
     keyPlaceholder: "Fusion-Schlüssel",
     showKey: "Schlüssel zeigen",
     hideKey: "Schlüssel verbergen",
+    clearKey: "Schlüssel leeren",
     connect: "Verbinden",
     connecting: "Verbinde",
     demo: "Demo",
@@ -255,6 +257,7 @@ export const copy: Record<Lang, Copy> = {
     keyPlaceholder: "Fusion key",
     showKey: "Show key",
     hideKey: "Hide key",
+    clearKey: "Clear key",
     connect: "Connect",
     connecting: "Connecting",
     demo: "Demo",
