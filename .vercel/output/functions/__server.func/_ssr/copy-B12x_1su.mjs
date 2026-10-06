@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/copy-CHj5eqsh.js
+//#region node_modules/.nitro/vite/services/ssr/assets/copy-B12x_1su.js
 function readLang() {
 	try {
 		return localStorage.getItem("kaufplan.lang") === "en" ? "en" : "de";
@@ -85,7 +85,6 @@ var copy = {
 		lastRun: "Letzte Ausführung",
 		qty: "Menge",
 		notSent: "nicht gesendet",
-		fiatLeft: "Rest-Fiat",
 		stop: "Stopp nach dem ersten Fehler. Gesendete Orders bleiben.",
 		runDemo: "Demo ausführen",
 		runLive: "Market-Käufe ausführen",
@@ -216,7 +215,6 @@ var copy = {
 		lastRun: "Last run",
 		qty: "Quantity",
 		notSent: "not sent",
-		fiatLeft: "Fiat left",
 		stop: "Stopped after the first error. Sent orders stay.",
 		runDemo: "Run demo",
 		runLive: "Place market buys",

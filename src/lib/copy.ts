@@ -82,7 +82,6 @@ type Copy = {
   lastRun: string;
   qty: string;
   notSent: string;
-  fiatLeft: string;
   stop: string;
   runDemo: string;
   runLive: string;
@@ -202,7 +201,6 @@ export const copy: Record<Lang, Copy> = {
     lastRun: "Letzte Ausführung",
     qty: "Menge",
     notSent: "nicht gesendet",
-    fiatLeft: "Rest-Fiat",
     stop: "Stopp nach dem ersten Fehler. Gesendete Orders bleiben.",
     runDemo: "Demo ausführen",
     runLive: "Market-Käufe ausführen",
@@ -327,7 +325,6 @@ export const copy: Record<Lang, Copy> = {
     lastRun: "Last run",
     qty: "Quantity",
     notSent: "not sent",
-    fiatLeft: "Fiat left",
     stop: "Stopped after the first error. Sent orders stay.",
     runDemo: "Run demo",
     runLive: "Place market buys",

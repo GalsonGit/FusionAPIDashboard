@@ -116,8 +116,8 @@ export function Kaufplan() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [lang, setLang] = useState<Lang>("de");
-  const [leftFiat, setLeftFiat] = useState<number | null>(null);
   const booted = useRef(false);
+  const requestGen = useRef(0);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -301,10 +301,12 @@ export function Kaufplan() {
 
   async function connect(key = apiKey, keep = remember) {
     const trimmed = key.trim();
+    const gen = ++requestGen.current;
     setError("");
     setLoading(true);
     try {
       const result = await loadFusionSnapshot({ data: { apiKey: trimmed, lang: readLang() } });
+      if (gen !== requestGen.current) return;
       if (!result.ok) {
         setError(result.message);
         return;
@@ -330,13 +332,16 @@ export function Kaufplan() {
       if (keep) localStorage.setItem(KEY, trimmed);
       else localStorage.removeItem(KEY);
     } catch (err) {
+      if (gen !== requestGen.current) return;
       setError(err instanceof Error ? err.message : copy[readLang()].connectFail);
     } finally {
-      setLoading(false);
+      if (gen === requestGen.current) setLoading(false);
     }
   }
 
   function openDemo() {
+    requestGen.current += 1;
+    setLoading(false);
     const demo = demoSnapshot();
     const nextQuote = richestQuote(quoteOptions(demo.instruments), demo.balances);
     setSnapshot(demo);
@@ -358,6 +363,19 @@ export function Kaufplan() {
       return first ? [{ pair: first.pair, hundredths: 10000 }] : [];
     });
     setInvestText((prev) => (prev.trim() ? prev : "1000"));
+  }
+
+  function closeDemo() {
+    requestGen.current += 1;
+    setLoading(false);
+    setMode("idle");
+    setSnapshot(null);
+    setBalanceDraft({});
+    setError("");
+    setResults([]);
+    setSelections([]);
+    setConfirmOpen(false);
+    setDraft(null);
   }
 
   function setDemoBalance(symbol: string, raw: string) {
@@ -491,11 +509,6 @@ export function Kaufplan() {
           feeCurrency: quote,
         }));
         setResults(next);
-        setLeftFiat(
-          Math.round(
-            (available - next.reduce((sum, row) => sum + num(row.filledAmount) + num(row.feeAmount), 0)) * 100,
-          ) / 100,
-        );
         setConfirmOpen(false);
         return;
       }
@@ -514,16 +527,7 @@ export function Kaufplan() {
       setResults(result.results);
       setConfirmOpen(false);
       const refreshed = await loadFusionSnapshot({ data: { apiKey: apiKey.trim(), lang } });
-      if (refreshed.ok) {
-        setSnapshot(refreshed.snapshot);
-        const balance = refreshed.snapshot.balances.find((item) => item.symbol === quote);
-        setLeftFiat(num(balance?.available));
-      } else {
-        const spent = result.results
-          .filter((row) => row.ok)
-          .reduce((sum, row) => sum + (num(row.filledAmount) || num(row.spent)) + num(row.feeAmount), 0);
-        setLeftFiat(Math.round((available - spent) * 100) / 100);
-      }
+      if (refreshed.ok) setSnapshot(refreshed.snapshot);
     } catch (err) {
       setError(err instanceof Error ? err.message : t.runFail);
     } finally {
@@ -608,7 +612,24 @@ export function Kaufplan() {
             <input
               id="api-key"
               value={apiKey}
-              onChange={(event) => setApiKey(event.target.value)}
+              onChange={(event) => {
+                const next = event.target.value;
+                const inserted = next.trim().length - apiKey.trim().length >= 8;
+                setApiKey(next);
+                if (inserted && next.trim().length >= 8) void connect(next, remember);
+              }}
+              onPaste={(event) => {
+                const input = event.currentTarget;
+                const pasted = event.clipboardData.getData("text");
+                if (!pasted) return;
+                const start = input.selectionStart ?? input.value.length;
+                const end = input.selectionEnd ?? start;
+                const next = input.value.slice(0, start) + pasted + input.value.slice(end);
+                if (next.trim().length < 8) return;
+                event.preventDefault();
+                setApiKey(next);
+                void connect(next, remember);
+              }}
               type={showKey ? "text" : "password"}
               autoComplete="off"
               spellCheck={false}
@@ -641,16 +662,18 @@ export function Kaufplan() {
           <span className="flex gap-2">
             <button
               type="submit"
+              aria-pressed={mode === "live"}
               disabled={loading || apiKey.trim().length < 8}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 font-medium text-primary-fg disabled:opacity-50 sm:flex-none"
+              className={`inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 font-medium disabled:opacity-50 sm:flex-none ${mode === "live" ? "border-primary bg-primary text-primary-fg" : "border-line bg-bg text-fg"}`}
             >
               {loading ? <Loader2 className="size-4 animate-spin motion-reduce:animate-none" /> : null}
               {loading ? t.connecting : t.connect}
             </button>
             <button
               type="button"
-              onClick={openDemo}
-              className="inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-line bg-raised px-4 sm:flex-none"
+              aria-pressed={mode === "demo"}
+              onClick={() => (mode === "demo" ? closeDemo() : openDemo())}
+              className={`inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 font-medium sm:flex-none ${mode === "demo" ? "border-primary bg-primary text-primary-fg" : "border-line bg-bg text-fg"}`}
             >
               {t.demo}
             </button>
@@ -1195,15 +1218,6 @@ export function Kaufplan() {
         >
           {mode === "demo" ? t.runDemo : t.runLive}
         </button>
-        {snapshot ? (
-          <p className="mt-4 border-t border-line pt-3 font-mono text-sm">
-            {t.fiatLeft}{" "}
-            {formatMoney(
-              leftFiat != null ? leftFiat : Math.round((available - (invest != null && invest > 0 ? gross : 0)) * 100) / 100,
-              quote,
-            )}
-          </p>
-        ) : null}
       </section>
 
       {confirmOpen ? (

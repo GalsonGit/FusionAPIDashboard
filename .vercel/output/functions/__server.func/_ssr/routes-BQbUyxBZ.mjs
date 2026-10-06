@@ -1,9 +1,9 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { b as require_jsx_runtime, q as require_react } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as TSS_SERVER_FUNCTION, r as getServerFnById, t as createServerFn } from "./ssr.mjs";
-import { n as readLang, t as copy } from "./copy-CHj5eqsh.mjs";
+import { n as readLang, t as copy } from "./copy-B12x_1su.mjs";
 import { a as RefreshCw, c as Eye, i as Search, l as EyeOff, n as Unplug, o as LoaderCircle, r as TriangleAlert, s as KeyRound, t as X, u as Check } from "../_libs/lucide-react.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-B1EdwAEH.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-BQbUyxBZ.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var createSsrRpc = (functionId) => {
@@ -689,8 +689,8 @@ function Kaufplan() {
 	const [confirmOpen, setConfirmOpen] = (0, import_react.useState)(false);
 	const [accepted, setAccepted] = (0, import_react.useState)(false);
 	const [lang, setLang] = (0, import_react.useState)("de");
-	const [leftFiat, setLeftFiat] = (0, import_react.useState)(null);
 	const booted = (0, import_react.useRef)(false);
+	const requestGen = (0, import_react.useRef)(0);
 	const cancelRef = (0, import_react.useRef)(null);
 	(0, import_react.useEffect)(() => {
 		if (booted.current) return;
@@ -851,6 +851,7 @@ function Kaufplan() {
 	if (snapshot && gross > available + .009) blockers.push(t.overBalance(quote));
 	async function connect(key = apiKey, keep = remember) {
 		const trimmed = key.trim();
+		const gen = ++requestGen.current;
 		setError("");
 		setLoading(true);
 		try {
@@ -858,6 +859,7 @@ function Kaufplan() {
 				apiKey: trimmed,
 				lang: readLang()
 			} });
+			if (gen !== requestGen.current) return;
 			if (!result.ok) {
 				setError(result.message);
 				return;
@@ -874,12 +876,15 @@ function Kaufplan() {
 			if (keep) localStorage.setItem(KEY, trimmed);
 			else localStorage.removeItem(KEY);
 		} catch (err) {
+			if (gen !== requestGen.current) return;
 			setError(err instanceof Error ? err.message : copy[readLang()].connectFail);
 		} finally {
-			setLoading(false);
+			if (gen === requestGen.current) setLoading(false);
 		}
 	}
 	function openDemo() {
+		requestGen.current += 1;
+		setLoading(false);
 		const demo = demoSnapshot();
 		const nextQuote = richestQuote(quoteOptions(demo.instruments), demo.balances);
 		setSnapshot(demo);
@@ -909,6 +914,18 @@ function Kaufplan() {
 			}] : [];
 		});
 		setInvestText((prev) => prev.trim() ? prev : "1000");
+	}
+	function closeDemo() {
+		requestGen.current += 1;
+		setLoading(false);
+		setMode("idle");
+		setSnapshot(null);
+		setBalanceDraft({});
+		setError("");
+		setResults([]);
+		setSelections([]);
+		setConfirmOpen(false);
+		setDraft(null);
 	}
 	function setDemoBalance(symbol, raw) {
 		setBalanceDraft((prev) => ({
@@ -1055,7 +1072,6 @@ function Kaufplan() {
 					feeCurrency: quote
 				}));
 				setResults(next);
-				setLeftFiat(Math.round((available - next.reduce((sum, row) => sum + num(row.filledAmount) + num(row.feeAmount), 0)) * 100) / 100);
 				setConfirmOpen(false);
 				return;
 			}
@@ -1078,14 +1094,7 @@ function Kaufplan() {
 				apiKey: apiKey.trim(),
 				lang
 			} });
-			if (refreshed.ok) {
-				setSnapshot(refreshed.snapshot);
-				const balance = refreshed.snapshot.balances.find((item) => item.symbol === quote);
-				setLeftFiat(num(balance?.available));
-			} else {
-				const spent = result.results.filter((row) => row.ok).reduce((sum, row) => sum + (num(row.filledAmount) || num(row.spent)) + num(row.feeAmount), 0);
-				setLeftFiat(Math.round((available - spent) * 100) / 100);
-			}
+			if (refreshed.ok) setSnapshot(refreshed.snapshot);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : t.runFail);
 		} finally {
@@ -1183,7 +1192,24 @@ function Kaufplan() {
 									/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 										id: "api-key",
 										value: apiKey,
-										onChange: (event) => setApiKey(event.target.value),
+										onChange: (event) => {
+											const next = event.target.value;
+											const inserted = next.trim().length - apiKey.trim().length >= 8;
+											setApiKey(next);
+											if (inserted && next.trim().length >= 8) connect(next, remember);
+										},
+										onPaste: (event) => {
+											const input = event.currentTarget;
+											const pasted = event.clipboardData.getData("text");
+											if (!pasted) return;
+											const start = input.selectionStart ?? input.value.length;
+											const end = input.selectionEnd ?? start;
+											const next = input.value.slice(0, start) + pasted + input.value.slice(end);
+											if (next.trim().length < 8) return;
+											event.preventDefault();
+											setApiKey(next);
+											connect(next, remember);
+										},
 										type: showKey ? "text" : "password",
 										autoComplete: "off",
 										spellCheck: false,
@@ -1214,13 +1240,15 @@ function Kaufplan() {
 								className: "flex gap-2",
 								children: [/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 									type: "submit",
+									"aria-pressed": mode === "live",
 									disabled: loading || apiKey.trim().length < 8,
-									className: "inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 font-medium text-primary-fg disabled:opacity-50 sm:flex-none",
+									className: `inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 font-medium disabled:opacity-50 sm:flex-none ${mode === "live" ? "border-primary bg-primary text-primary-fg" : "border-line bg-bg text-fg"}`,
 									children: [loading ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoaderCircle, { className: "size-4 animate-spin motion-reduce:animate-none" }) : null, loading ? t.connecting : t.connect]
 								}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 									type: "button",
-									onClick: openDemo,
-									className: "inline-flex h-11 flex-1 items-center justify-center rounded-lg border border-line bg-raised px-4 sm:flex-none",
+									"aria-pressed": mode === "demo",
+									onClick: () => mode === "demo" ? closeDemo() : openDemo(),
+									className: `inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 font-medium sm:flex-none ${mode === "demo" ? "border-primary bg-primary text-primary-fg" : "border-line bg-bg text-fg"}`,
 									children: t.demo
 								})]
 							}),
@@ -1903,15 +1931,7 @@ function Kaufplan() {
 						},
 						className: "mt-4 inline-flex h-12 w-full items-center justify-center rounded-lg bg-primary px-5 font-medium text-primary-fg disabled:opacity-50 sm:w-auto",
 						children: mode === "demo" ? t.runDemo : t.runLive
-					}),
-					snapshot ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("p", {
-						className: "mt-4 border-t border-line pt-3 font-mono text-sm",
-						children: [
-							t.fiatLeft,
-							" ",
-							formatMoney(leftFiat != null ? leftFiat : Math.round((available - (invest != null && invest > 0 ? gross : 0)) * 100) / 100, quote)
-						]
-					}) : null
+					})
 				]
 			}),
 			confirmOpen ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
