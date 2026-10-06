@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/copy-Djl9Nz8N.js
+//#region node_modules/.nitro/vite/services/ssr/assets/copy-BcDKeA62.js
 function readLang() {
 	try {
 		return localStorage.getItem("kaufplan.lang") === "en" ? "en" : "de";
@@ -91,6 +91,7 @@ var copy = {
 		stakeLine: (stake, fee, net) => `Einsatz ${stake} · Gebühr ${fee} · Kaufwert ${net}`,
 		confirmCheck: "Diese Käufe jetzt ausführen.",
 		stakeBought: "Gekaufte Assets zu 100 % staken",
+		stakeLater: "In späteren Updates möglich!",
 		staked: "Gestakt",
 		stakeFail: "Stake fehlgeschlagen",
 		stakeNone: "Kein Staking für dieses Asset",
@@ -217,6 +218,7 @@ var copy = {
 		stakeLine: (stake, fee, net) => `Spend ${stake} · Fee ${fee} · Net ${net}`,
 		confirmCheck: "Place these buys now.",
 		stakeBought: "Stake 100% of the bought assets",
+		stakeLater: "Available in a later update!",
 		staked: "Staked",
 		stakeFail: "Stake failed",
 		stakeNone: "No staking for this asset",

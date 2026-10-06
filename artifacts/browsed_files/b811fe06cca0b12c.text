@@ -1,0 +1,283 @@
+# bitpanda-fusion-cli (`bp-fusion`)
+
+A command-line interface for the [Bitpanda Fusion API](https://docs.fusion.bitpanda.com/). Query market data, manage orders, and inspect your account — all from your terminal.
+
+## Installation
+
+### Go
+
+```bash
+go install github.com/bitpanda-labs/bitpanda-fusion-cli/cmd/bp-fusion@latest
+```
+
+### From source
+
+```bash
+git clone https://github.com/bitpanda-labs/bitpanda-fusion-cli
+cd bitpanda-fusion-cli
+make install
+```
+
+`make install` builds the binary and copies it to `/usr/local/bin/bp-fusion`.
+
+### Homebrew
+
+```bash
+brew tap bitpanda-labs/tap
+brew install bp-fusion
+```
+
+### Pre-built binaries
+
+Download from [Releases](https://github.com/bitpanda-labs/bitpanda-fusion-cli/releases/latest).
+
+## Configuration
+
+`bp-fusion` needs a Bitpanda Fusion API key. Get one at [docs.fusion.bitpanda.com](https://docs.fusion.bitpanda.com/).
+
+Three ways to provide it (in priority order):
+
+```bash
+# 1. Flag (highest priority)
+bp-fusion account info --api-key YOUR_KEY
+
+# 2. Environment variable
+export FUSION_API_KEY=YOUR_KEY
+bp-fusion balances
+
+# 3. Config file (~/.config/fusion/config.yaml)
+mkdir -p ~/.config/fusion
+cp config.example.yaml ~/.config/fusion/config.yaml
+chmod 600 ~/.config/fusion/config.yaml
+# edit the file and set your api_key
+bp-fusion balances
+```
+
+**Config file** (`~/.config/fusion/config.yaml`):
+
+```yaml
+api_key: YOUR_API_KEY_HERE
+host: https://api.fusion.bitpanda.com  # optional, defaults to production
+```
+
+Config file keys are lowercase. Env vars are the UPPERCASE equivalent (`FUSION_API_KEY`, `FUSION_HOST`).
+
+> **Tip:** `bp-fusion` will warn on stderr if the config file has permissions more permissive than `0600`. Since the file contains your API key, restrict access with `chmod 600 ~/.config/fusion/config.yaml`.
+
+## Usage
+
+### Market Data
+
+#### Tickers
+
+Show current mid price and 24h statistics. Omit `--pair` to get all active pairs.
+
+```bash
+bp-fusion tickers
+bp-fusion tickers --pair BTC-EUR
+bp-fusion tickers --pair BTC-EUR,ETH-EUR
+bp-fusion tickers -o json
+```
+
+#### Trading Pairs
+
+Show active trading pairs and their constraints (min/max order size, tick size, increments). Useful for understanding order sizing rules before placing an order.
+
+```bash
+bp-fusion pairs
+bp-fusion pairs --pair BTC-EUR
+bp-fusion pairs --pair BTC-EUR,ETH-EUR
+bp-fusion pairs -o csv > pairs.csv
+```
+
+#### Orderbook
+
+```bash
+bp-fusion orderbook BTC-EUR
+bp-fusion orderbook BTC-EUR --depth 5
+bp-fusion orderbook ETH-EUR -o json
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--depth`, `-d` | `10` | Price levels per side (1–100) |
+
+#### Candles
+
+Show OHLCV (open, high, low, close, volume) candlestick data for a trading pair.
+
+```bash
+bp-fusion candles BTC-EUR
+bp-fusion candles BTC-EUR --interval 1h
+bp-fusion candles BTC-EUR --interval 1h --limit 48
+bp-fusion candles BTC-EUR --interval 5m --from 2024-01-01T00:00:00Z --to 2024-01-02T00:00:00Z
+bp-fusion candles BTC-EUR --interval 1d --limit 30 -o json
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--interval` | `1d` | Bar interval: `1m`, `5m`, `10m`, `15m`, `30m`, `1h`, `4h`, `1d` |
+| `--from` | | Start time (RFC3339) |
+| `--to` | | End time (RFC3339) |
+| `--limit` | `1440` | Number of bars counted back from `--to`; when set, `--from` is ignored (1–1440) |
+
+#### Assets
+
+List supported assets (crypto and fiat) with their type.
+
+```bash
+bp-fusion assets
+bp-fusion assets --asset BTC
+bp-fusion assets --asset BTC,ETH,EUR
+bp-fusion assets -o json
+```
+
+### Account
+
+#### Info
+
+Show your 30-day traded volume and current fee tier.
+
+```bash
+bp-fusion account info
+bp-fusion account info -o json
+```
+
+Output columns: `30D VOLUME` · `TIER` · `FEE` · `NEXT TIER` · `NEXT FEE`
+
+#### Balances
+
+```bash
+bp-fusion account balances
+bp-fusion account balances -o json
+```
+
+### Trading
+
+#### Orders — List
+
+```bash
+bp-fusion orders list
+bp-fusion orders list --pair BTC-EUR
+bp-fusion orders list --pair BTC-EUR,ETH-EUR
+bp-fusion orders list --status open
+bp-fusion orders list --status partially-filled
+bp-fusion orders list --limit 50
+bp-fusion orders list --from 2024-01-01T00:00:00Z --to 2024-12-31T23:59:59Z
+```
+
+Accepted `--status` values: `open`, `closed`, `new`, `partially-filled`, `filled`, `canceled`, `filled-and-canceled`, `done-for-day`, `rejected`
+
+#### Orders — Get
+
+```bash
+bp-fusion orders get 1219733c-4214-4ce8-9369-22aa132cab0b
+bp-fusion orders get 1219733c-4214-4ce8-9369-22aa132cab0b -o json
+```
+
+#### Orders — Create
+
+Use `--quantity` for the **base currency** amount (e.g. 0.0001 BTC), or `--amount` for the **quote currency** amount (e.g. 30 EUR). These flags are mutually exclusive.
+
+```bash
+# Limit order — buy 0.0001 BTC at 50000 EUR
+bp-fusion orders create --pair BTC-EUR --side buy --type limit --limit-price 50000 --quantity 0.0001
+
+# Market order — spend 30 EUR on BTC
+bp-fusion orders create --pair BTC-EUR --side buy --type market --amount 30
+
+# Skip confirmation prompt (useful for scripting)
+bp-fusion orders create --pair BTC-EUR --side buy --type market --amount 30 --yes
+```
+
+By default, `create` shows a preview and asks for confirmation:
+
+```
+  Pair:        BTC-EUR
+  Side:        buy
+  Type:        limit
+  Limit Price: 50000
+  Quantity:    0.0001 (base currency)
+
+Place this order? [y/N]:
+```
+
+#### Orders — Cancel
+
+```bash
+bp-fusion orders cancel <order-id>
+bp-fusion orders cancel <order-id> --yes   # skip confirmation
+```
+
+#### Trades
+
+```bash
+bp-fusion trades list
+bp-fusion trades list --pair BTC-EUR
+bp-fusion trades list --pair BTC-EUR,ETH-EUR
+bp-fusion trades list --order-id 3aaad2dd-65ef-4ce8-98da-8af52a5b6f3e
+bp-fusion trades list --limit 100
+bp-fusion trades list --from 2024-01-01T00:00:00Z --to 2024-12-31T23:59:59Z
+bp-fusion trades get trade-a1b2c3d4
+```
+
+## Output formats
+
+All commands support `-o`/`--output`:
+
+| Format | Flag | Description |
+|--------|------|-------------|
+| Table | `-o table` (default) | Human-readable table |
+| JSON | `-o json` | For scripting and piping |
+| CSV | `-o csv` | For spreadsheets |
+
+```bash
+bp-fusion tickers -o json | jq '.[] | select(.pair == "BTC-EUR")'
+bp-fusion pairs -o csv > pairs.csv
+bp-fusion trades list -o csv > trades.csv
+bp-fusion assets -o json
+```
+
+## Global flags
+
+| Flag | Env var | Description |
+|------|---------|-------------|
+| `--api-key` | `FUSION_API_KEY` | API key |
+| `--host` | `FUSION_HOST` | Override API host (default: production) |
+| `--debug` | — | Print request URLs and raw responses to stderr |
+| `-o, --output` | — | Output format: `table`, `json`, or `csv` |
+
+## Exit codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success |
+| 1 | General error |
+| 2 | Authentication error |
+
+## Shell completion
+
+```bash
+# Bash
+source <(bp-fusion completion bash)
+
+# Zsh
+bp-fusion completion zsh > "${fpath[1]}/_bp-fusion"
+
+# Fish
+bp-fusion completion fish | source
+```
+
+## Development
+
+```bash
+make build          # build binary to ./bin/bp-fusion
+make install        # build and install to /usr/local/bin/bp-fusion
+make test           # run unit tests
+make test-coverage  # generate coverage report
+make lint           # run golangci-lint
+```
+
+## License
+
+Apache 2.0 — see [LICENSE](LICENSE) for details.

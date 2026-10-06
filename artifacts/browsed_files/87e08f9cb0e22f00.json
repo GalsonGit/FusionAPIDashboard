@@ -1,0 +1,194 @@
+[
+  {
+    "name": ".github",
+    "path": ".github",
+    "sha": "f07ceea0daa4227d23440d42629ad10ba2693065",
+    "size": 0,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/.github?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/tree/main/.github",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/f07ceea0daa4227d23440d42629ad10ba2693065",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/.github?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/f07ceea0daa4227d23440d42629ad10ba2693065",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/tree/main/.github"
+    }
+  },
+  {
+    "name": ".gitignore",
+    "path": ".gitignore",
+    "sha": "c0f20d0ecd9335ea1ec918a7b01fee8aeab4488a",
+    "size": 667,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/.gitignore?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/.gitignore",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/c0f20d0ecd9335ea1ec918a7b01fee8aeab4488a",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/.gitignore",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/.gitignore?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/c0f20d0ecd9335ea1ec918a7b01fee8aeab4488a",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/.gitignore"
+    }
+  },
+  {
+    "name": ".golangci.yml",
+    "path": ".golangci.yml",
+    "sha": "040d1deafa65d44c028d0a8c96ab7d1f3ef4ba2f",
+    "size": 560,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/.golangci.yml?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/.golangci.yml",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/040d1deafa65d44c028d0a8c96ab7d1f3ef4ba2f",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/.golangci.yml",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/.golangci.yml?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/040d1deafa65d44c028d0a8c96ab7d1f3ef4ba2f",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/.golangci.yml"
+    }
+  },
+  {
+    "name": ".goreleaser.yaml",
+    "path": ".goreleaser.yaml",
+    "sha": "3d2f7f8211c519fd32ad06d4c0f43887be3b984b",
+    "size": 1342,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/.goreleaser.yaml?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/.goreleaser.yaml",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/3d2f7f8211c519fd32ad06d4c0f43887be3b984b",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/.goreleaser.yaml",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/.goreleaser.yaml?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/3d2f7f8211c519fd32ad06d4c0f43887be3b984b",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/.goreleaser.yaml"
+    }
+  },
+  {
+    "name": "LICENSE",
+    "path": "LICENSE",
+    "sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+    "size": 11357,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/LICENSE?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/LICENSE",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/LICENSE",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/LICENSE?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/LICENSE"
+    }
+  },
+  {
+    "name": "Makefile",
+    "path": "Makefile",
+    "sha": "ca502ec41a2d2c0bffca1611fc660eac0fdebf08",
+    "size": 927,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/Makefile?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/Makefile",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ca502ec41a2d2c0bffca1611fc660eac0fdebf08",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/Makefile",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/Makefile?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ca502ec41a2d2c0bffca1611fc660eac0fdebf08",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/Makefile"
+    }
+  },
+  {
+    "name": "README.md",
+    "path": "README.md",
+    "sha": "c68af5daad3c02cf44f4975e3902a3eb9aa8b74a",
+    "size": 7211,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/README.md?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/README.md",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/c68af5daad3c02cf44f4975e3902a3eb9aa8b74a",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/README.md",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/README.md?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/c68af5daad3c02cf44f4975e3902a3eb9aa8b74a",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/README.md"
+    }
+  },
+  {
+    "name": "cmd",
+    "path": "cmd",
+    "sha": "f4b799d41f5482b47ad693e72086004ad826e1ff",
+    "size": 0,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/cmd?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/tree/main/cmd",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/f4b799d41f5482b47ad693e72086004ad826e1ff",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/cmd?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/f4b799d41f5482b47ad693e72086004ad826e1ff",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/tree/main/cmd"
+    }
+  },
+  {
+    "name": "config.example.yaml",
+    "path": "config.example.yaml",
+    "sha": "ff961925e012da7050d9997f6833ff077ca43968",
+    "size": 392,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/config.example.yaml?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/config.example.yaml",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ff961925e012da7050d9997f6833ff077ca43968",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/config.example.yaml",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/config.example.yaml?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ff961925e012da7050d9997f6833ff077ca43968",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/config.example.yaml"
+    }
+  },
+  {
+    "name": "go.mod",
+    "path": "go.mod",
+    "sha": "e5769d8cc252ba8429d0a1417fad56a67e347906",
+    "size": 1375,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/go.mod?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/go.mod",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/e5769d8cc252ba8429d0a1417fad56a67e347906",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/go.mod",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/go.mod?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/e5769d8cc252ba8429d0a1417fad56a67e347906",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/go.mod"
+    }
+  },
+  {
+    "name": "go.sum",
+    "path": "go.sum",
+    "sha": "62acfce51649dc7241ca8ca43aad5b48af51cc9d",
+    "size": 7276,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/go.sum?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/go.sum",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/62acfce51649dc7241ca8ca43aad5b48af51cc9d",
+    "download_url": "https://raw.githubusercontent.com/bitpanda-labs/bitpanda-fusion-cli/main/go.sum",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/go.sum?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/62acfce51649dc7241ca8ca43aad5b48af51cc9d",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/blob/main/go.sum"
+    }
+  },
+  {
+    "name": "internal",
+    "path": "internal",
+    "sha": "3327b8e1bda6e7e9bb92263e87401235cd7a7044",
+    "size": 0,
+    "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/internal?ref=main",
+    "html_url": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/tree/main/internal",
+    "git_url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/3327b8e1bda6e7e9bb92263e87401235cd7a7044",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/contents/internal?ref=main",
+      "git": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/3327b8e1bda6e7e9bb92263e87401235cd7a7044",
+      "html": "https://github.com/bitpanda-labs/bitpanda-fusion-cli/tree/main/internal"
+    }
+  }
+]

@@ -1,0 +1,17 @@
+package api
+
+import "net/url"
+
+type Balance struct {
+	Symbol    string `json:"symbol"`
+	Available string `json:"available"`
+	Locked    string `json:"locked"`
+}
+
+func (c *Client) GetBalances() ([]Balance, error) {
+	var result []Balance
+	if err := c.get("/v1/account/balances", url.Values{}, &result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}

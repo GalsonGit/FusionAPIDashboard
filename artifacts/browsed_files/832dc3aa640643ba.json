@@ -1,0 +1,518 @@
+{
+  "sha": "76dda15cb587474153201d7d066764fd25d0ead0",
+  "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/76dda15cb587474153201d7d066764fd25d0ead0",
+  "tree": [
+    {
+      "path": ".github",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f07ceea0daa4227d23440d42629ad10ba2693065",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/f07ceea0daa4227d23440d42629ad10ba2693065"
+    },
+    {
+      "path": ".github/workflows",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "827117296581e80efbc10ac6eadfc5cc7437c1bb",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/827117296581e80efbc10ac6eadfc5cc7437c1bb"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f1482f663783b09aa84241069cc8e89a7e796047",
+      "size": 641,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/f1482f663783b09aa84241069cc8e89a7e796047"
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0f20d0ecd9335ea1ec918a7b01fee8aeab4488a",
+      "size": 667,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/c0f20d0ecd9335ea1ec918a7b01fee8aeab4488a"
+    },
+    {
+      "path": ".golangci.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "040d1deafa65d44c028d0a8c96ab7d1f3ef4ba2f",
+      "size": 560,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/040d1deafa65d44c028d0a8c96ab7d1f3ef4ba2f"
+    },
+    {
+      "path": ".goreleaser.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d2f7f8211c519fd32ad06d4c0f43887be3b984b",
+      "size": 1342,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/3d2f7f8211c519fd32ad06d4c0f43887be3b984b"
+    },
+    {
+      "path": "LICENSE",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "size": 11357,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64"
+    },
+    {
+      "path": "Makefile",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ca502ec41a2d2c0bffca1611fc660eac0fdebf08",
+      "size": 927,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ca502ec41a2d2c0bffca1611fc660eac0fdebf08"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c68af5daad3c02cf44f4975e3902a3eb9aa8b74a",
+      "size": 7211,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/c68af5daad3c02cf44f4975e3902a3eb9aa8b74a"
+    },
+    {
+      "path": "cmd",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f4b799d41f5482b47ad693e72086004ad826e1ff",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/f4b799d41f5482b47ad693e72086004ad826e1ff"
+    },
+    {
+      "path": "cmd/bp-fusion",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "e08b4393368fffb77dea34cdb1d1a78c7cbcee70",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/e08b4393368fffb77dea34cdb1d1a78c7cbcee70"
+    },
+    {
+      "path": "cmd/bp-fusion/main.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2252e2b3e065359d50d1f11899fe64e274871c1e",
+      "size": 450,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/2252e2b3e065359d50d1f11899fe64e274871c1e"
+    },
+    {
+      "path": "config.example.yaml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ff961925e012da7050d9997f6833ff077ca43968",
+      "size": 392,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ff961925e012da7050d9997f6833ff077ca43968"
+    },
+    {
+      "path": "go.mod",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5769d8cc252ba8429d0a1417fad56a67e347906",
+      "size": 1375,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/e5769d8cc252ba8429d0a1417fad56a67e347906"
+    },
+    {
+      "path": "go.sum",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62acfce51649dc7241ca8ca43aad5b48af51cc9d",
+      "size": 7276,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/62acfce51649dc7241ca8ca43aad5b48af51cc9d"
+    },
+    {
+      "path": "internal",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "3327b8e1bda6e7e9bb92263e87401235cd7a7044",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/3327b8e1bda6e7e9bb92263e87401235cd7a7044"
+    },
+    {
+      "path": "internal/api",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "408ed41b5a96fd999cb1745a7cf97421a9b1aece",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/408ed41b5a96fd999cb1745a7cf97421a9b1aece"
+    },
+    {
+      "path": "internal/api/account.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db86b9481e2c9fcf42d239dc49e7979451bbcbfc",
+      "size": 572,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/db86b9481e2c9fcf42d239dc49e7979451bbcbfc"
+    },
+    {
+      "path": "internal/api/account_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bdfb5dd813ac48e52330d9e7c1dcb53090ec9fff",
+      "size": 1360,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/bdfb5dd813ac48e52330d9e7c1dcb53090ec9fff"
+    },
+    {
+      "path": "internal/api/assets.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "07a90197887c70b144b19928fa1baa54bf76d8a0",
+      "size": 446,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/07a90197887c70b144b19928fa1baa54bf76d8a0"
+    },
+    {
+      "path": "internal/api/assets_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7f7be2b118a025edbb1e0a1b2b3afbf5fc30432c",
+      "size": 1173,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/7f7be2b118a025edbb1e0a1b2b3afbf5fc30432c"
+    },
+    {
+      "path": "internal/api/balances.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3febf81940587269b3c9e95109118dce161379f",
+      "size": 356,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/d3febf81940587269b3c9e95109118dce161379f"
+    },
+    {
+      "path": "internal/api/balances_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "47bac2a5cd2d53d1aab0e85d06bdb1abea21d15b",
+      "size": 1206,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/47bac2a5cd2d53d1aab0e85d06bdb1abea21d15b"
+    },
+    {
+      "path": "internal/api/candles.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "605caf6bb9641abb95639fa12413296942590bc0",
+      "size": 1438,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/605caf6bb9641abb95639fa12413296942590bc0"
+    },
+    {
+      "path": "internal/api/candles_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee1232eb51eb038690d6df89475621b3a5fce329",
+      "size": 2745,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ee1232eb51eb038690d6df89475621b3a5fce329"
+    },
+    {
+      "path": "internal/api/client.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2cbc995e4b27a5390048b059c6c28a9b8779b904",
+      "size": 3167,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/2cbc995e4b27a5390048b059c6c28a9b8779b904"
+    },
+    {
+      "path": "internal/api/client_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0201f436674e1022d9964d622e527239ceb37670",
+      "size": 2246,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/0201f436674e1022d9964d622e527239ceb37670"
+    },
+    {
+      "path": "internal/api/orderbook.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0c355b76b813f821f0c670f8d4d9ebda850d74d",
+      "size": 701,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/c0c355b76b813f821f0c670f8d4d9ebda850d74d"
+    },
+    {
+      "path": "internal/api/orders.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "41c68f374e1addec847e8a87998687064b7b1a5c",
+      "size": 3417,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/41c68f374e1addec847e8a87998687064b7b1a5c"
+    },
+    {
+      "path": "internal/api/orders_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ce9fc79f71bb14c307d0488116efa0b075c85c91",
+      "size": 3115,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ce9fc79f71bb14c307d0488116efa0b075c85c91"
+    },
+    {
+      "path": "internal/api/pagination.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "740941d7e7e8862318a9edf4745420d2e53696e3",
+      "size": 157,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/740941d7e7e8862318a9edf4745420d2e53696e3"
+    },
+    {
+      "path": "internal/api/pairs.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "71931674739f42a2a085dbb43bb7cf50aa65b2f5",
+      "size": 848,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/71931674739f42a2a085dbb43bb7cf50aa65b2f5"
+    },
+    {
+      "path": "internal/api/pairs_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4bc6c8dfe514fa78b278bb4881e0a7ab20c24733",
+      "size": 1187,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/4bc6c8dfe514fa78b278bb4881e0a7ab20c24733"
+    },
+    {
+      "path": "internal/api/tickers.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "188212b3afd1211f5b9e83245b4b19d5132ad2c2",
+      "size": 505,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/188212b3afd1211f5b9e83245b4b19d5132ad2c2"
+    },
+    {
+      "path": "internal/api/tickers_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f5a7a1f3b5b24a881d74cbb4571794b1feb400a5",
+      "size": 1194,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/f5a7a1f3b5b24a881d74cbb4571794b1feb400a5"
+    },
+    {
+      "path": "internal/api/time.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e6721ae01cfccaa8504b4d3c44798f3596bf5f90",
+      "size": 304,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/e6721ae01cfccaa8504b4d3c44798f3596bf5f90"
+    },
+    {
+      "path": "internal/api/time_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e048538c4b3c48d7e105d93fc850c187a3e46416",
+      "size": 789,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/e048538c4b3c48d7e105d93fc850c187a3e46416"
+    },
+    {
+      "path": "internal/api/trades.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ae3455eac8a2a62e657b5f368fc6968d1a92a6a0",
+      "size": 1902,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ae3455eac8a2a62e657b5f368fc6968d1a92a6a0"
+    },
+    {
+      "path": "internal/api/trades_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7aac47439557a539656c04180c314aa71bced0b1",
+      "size": 2819,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/7aac47439557a539656c04180c314aa71bced0b1"
+    },
+    {
+      "path": "internal/cli",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "94a8c7690a42360561c99ceec52d27498d763d7c",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/94a8c7690a42360561c99ceec52d27498d763d7c"
+    },
+    {
+      "path": "internal/cli/account.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ea3db44a13b9eb83dafa93d69fb2f64a0b72f376",
+      "size": 2269,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ea3db44a13b9eb83dafa93d69fb2f64a0b72f376"
+    },
+    {
+      "path": "internal/cli/account_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "154bb52656e10d670a4bcaa57476998e10a1850b",
+      "size": 1759,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/154bb52656e10d670a4bcaa57476998e10a1850b"
+    },
+    {
+      "path": "internal/cli/assets.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7d243138e6bb51884344177070921fc7f43a150",
+      "size": 1140,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/d7d243138e6bb51884344177070921fc7f43a150"
+    },
+    {
+      "path": "internal/cli/candles.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "059e2c96dd67b255d15a19f9c10ea6a73705ebdb",
+      "size": 2151,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/059e2c96dd67b255d15a19f9c10ea6a73705ebdb"
+    },
+    {
+      "path": "internal/cli/completion.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8f9b9444cbf8b6dfecaafa26a9f69b9c3d749456",
+      "size": 1281,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/8f9b9444cbf8b6dfecaafa26a9f69b9c3d749456"
+    },
+    {
+      "path": "internal/cli/errors.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "94d81b3babff844a455ad32fd6dbef659f070172",
+      "size": 344,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/94d81b3babff844a455ad32fd6dbef659f070172"
+    },
+    {
+      "path": "internal/cli/orderbook.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ac4005a2571a66084df74ff5b46d43ade67e174b",
+      "size": 1628,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ac4005a2571a66084df74ff5b46d43ade67e174b"
+    },
+    {
+      "path": "internal/cli/orders.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "511fabeae1dbf1187abf14d9cf7aac0d0cb1c386",
+      "size": 6411,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/511fabeae1dbf1187abf14d9cf7aac0d0cb1c386"
+    },
+    {
+      "path": "internal/cli/orders_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3630edddb07a03795ad51d152312c7b8ad21ab69",
+      "size": 2922,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/3630edddb07a03795ad51d152312c7b8ad21ab69"
+    },
+    {
+      "path": "internal/cli/pairs.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0396d953684c86393080286e5c318ffec2a3ed97",
+      "size": 1280,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/0396d953684c86393080286e5c318ffec2a3ed97"
+    },
+    {
+      "path": "internal/cli/root.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12dd70ace011ebca0090842c55aa017966a90184",
+      "size": 2558,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/12dd70ace011ebca0090842c55aa017966a90184"
+    },
+    {
+      "path": "internal/cli/tickers.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ab106971b62e7e98853c327ca7d119f56851cce6",
+      "size": 1233,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ab106971b62e7e98853c327ca7d119f56851cce6"
+    },
+    {
+      "path": "internal/cli/time.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b63df97e3fa92ccb420cc024b2b5622b892b19fd",
+      "size": 843,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/b63df97e3fa92ccb420cc024b2b5622b892b19fd"
+    },
+    {
+      "path": "internal/cli/time_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f7a96076e99fdb9cf182a4bab554180ff89c5359",
+      "size": 850,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/f7a96076e99fdb9cf182a4bab554180ff89c5359"
+    },
+    {
+      "path": "internal/cli/trades.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b666c30a79ececcbd476ed19c3e154cb91233034",
+      "size": 2334,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/b666c30a79ececcbd476ed19c3e154cb91233034"
+    },
+    {
+      "path": "internal/cli/trades_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c769576c8c8f7c66ddd88d13808e06d30646f4f9",
+      "size": 1885,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/c769576c8c8f7c66ddd88d13808e06d30646f4f9"
+    },
+    {
+      "path": "internal/config",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "85f960cd017664915b8a9bd539a01cd7856b4acc",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/85f960cd017664915b8a9bd539a01cd7856b4acc"
+    },
+    {
+      "path": "internal/config/config.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5a16df71ac5ec962b52b5f6bdf566d3c104b4f36",
+      "size": 1289,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/5a16df71ac5ec962b52b5f6bdf566d3c104b4f36"
+    },
+    {
+      "path": "internal/config/config_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e5e95f43da25b8bdf777a1e4b971a7a952fd5cb9",
+      "size": 2403,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/e5e95f43da25b8bdf777a1e4b971a7a952fd5cb9"
+    },
+    {
+      "path": "internal/output",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "2b1f857682fae51098ea777d56eeb79aa160ed7f",
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/trees/2b1f857682fae51098ea777d56eeb79aa160ed7f"
+    },
+    {
+      "path": "internal/output/csv.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "531f4abd11291600f4f02da8f1fdff29ea63f053",
+      "size": 532,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/531f4abd11291600f4f02da8f1fdff29ea63f053"
+    },
+    {
+      "path": "internal/output/formatter.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ad01c55b8481890dd1c2e69ad9d877731d617a90",
+      "size": 911,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/ad01c55b8481890dd1c2e69ad9d877731d617a90"
+    },
+    {
+      "path": "internal/output/formatter_test.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "724c43047d43496af466ca6313a06a775d2b3164",
+      "size": 2826,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/724c43047d43496af466ca6313a06a775d2b3164"
+    },
+    {
+      "path": "internal/output/json.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5dbea15624d7185f68982279b278aa59c2c11142",
+      "size": 311,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/5dbea15624d7185f68982279b278aa59c2c11142"
+    },
+    {
+      "path": "internal/output/table.go",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "44dcfed5866b96d78bfa8ebc468917659c6f01d8",
+      "size": 755,
+      "url": "https://api.github.com/repos/bitpanda-labs/bitpanda-fusion-cli/git/blobs/44dcfed5866b96d78bfa8ebc468917659c6f01d8"
+    }
+  ],
+  "truncated": false
+}

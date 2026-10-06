@@ -1,0 +1,24 @@
+package api
+
+import "net/url"
+
+type Tier struct {
+	Name              string `json:"name"`
+	Fee               string `json:"fee"`
+	FeeMode           string `json:"feeMode"`
+	RequiredVolume30d string `json:"requiredVolume30d"`
+}
+
+type Account struct {
+	TradedVolume30d string `json:"tradedVolume30d"`
+	CurrentTier     *Tier  `json:"currentTier"`
+	NextTier        *Tier  `json:"nextTier"`
+}
+
+func (c *Client) GetAccount() (*Account, error) {
+	var result Account
+	if err := c.get("/v1/account", url.Values{}, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}

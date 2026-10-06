@@ -1,9 +1,9 @@
 import { i as __toESM } from "../_runtime.mjs";
 import { b as require_jsx_runtime, q as require_react } from "../_libs/@tanstack/react-router+[...].mjs";
 import { n as TSS_SERVER_FUNCTION, r as getServerFnById, t as createServerFn } from "./ssr.mjs";
-import { n as readLang, t as copy } from "./copy-Djl9Nz8N.mjs";
+import { n as readLang, t as copy } from "./copy-BcDKeA62.mjs";
 import { a as RefreshCw, c as Eye, i as Search, l as EyeOff, n as Unplug, o as LoaderCircle, r as TriangleAlert, s as KeyRound, t as X, u as Check } from "../_libs/lucide-react.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/routes-C-Xx8Lyj.js
+//#region node_modules/.nitro/vite/services/ssr/assets/routes-vSwT0WpQ.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var createSsrRpc = (functionId) => {
@@ -685,7 +685,6 @@ function Kaufplan() {
 	const [results, setResults] = (0, import_react.useState)([]);
 	const [confirmOpen, setConfirmOpen] = (0, import_react.useState)(false);
 	const [accepted, setAccepted] = (0, import_react.useState)(false);
-	const [stakeAll, setStakeAll] = (0, import_react.useState)(false);
 	const [lang, setLang] = (0, import_react.useState)("de");
 	const [leftFiat, setLeftFiat] = (0, import_react.useState)(null);
 	const booted = (0, import_react.useRef)(false);
@@ -1004,8 +1003,7 @@ function Kaufplan() {
 					filledAmount: leg.amount,
 					spent: leg.amount,
 					feeAmount: leg.fee.toFixed(2),
-					feeCurrency: quote,
-					...stakeAll && leg.qty != null && leg.qty > 0 ? { stake: "staked" } : {}
+					feeCurrency: quote
 				}));
 				setResults(next);
 				setLeftFiat(Math.round((available - next.reduce((sum, row) => sum + num(row.filledAmount) + num(row.feeAmount), 0)) * 100) / 100);
@@ -1015,7 +1013,7 @@ function Kaufplan() {
 			const result = await placeFusionOrders({ data: {
 				apiKey: apiKey.trim(),
 				lang,
-				stake: stakeAll,
+				stake: false,
 				orders: legs.map((leg) => ({
 					pair: leg.pair,
 					amount: leg.amount
@@ -1885,13 +1883,16 @@ function Kaufplan() {
 							children: t.stakeLine(formatMoney(gross, quote), formatMoney(fee, quote), formatMoney(net, quote))
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
-							className: "mt-4 flex items-start gap-2 text-sm",
+							className: "mt-4 flex items-start gap-2 rounded-lg border border-brass px-3 py-2 text-sm",
 							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
 								type: "checkbox",
-								checked: stakeAll,
-								onChange: (event) => setStakeAll(event.target.checked),
+								checked: false,
+								disabled: true,
 								className: "mt-1 size-4 accent-primary"
-							}), t.stakeBought]
+							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [t.stakeBought, /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+								className: "mt-0.5 block font-medium text-brass",
+								children: t.stakeLater
+							})] })]
 						}),
 						mode === "live" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", {
 							className: "mt-4 flex items-start gap-2 text-sm",

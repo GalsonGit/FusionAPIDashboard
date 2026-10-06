@@ -1,0 +1,216 @@
+package cli
+
+import (
+	"bufio"
+	"encoding/json"
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/bitpanda-labs/bitpanda-fusion-cli/internal/api"
+	"github.com/spf13/cobra"
+)
+
+type ordersResult []api.Order
+
+func (r ordersResult) Headers() []string {
+	return []string{"ID", "PAIR", "SIDE", "TYPE", "LIMIT PRICE", "AMOUNT", "FILLED", "STATUS", "CREATED AT"}
+}
+
+func (r ordersResult) Rows() [][]string {
+	rows := make([][]string, len(r))
+	for i, o := range r {
+		rows[i] = []string{o.ID, o.Pair, o.Side, o.Type, o.LimitPrice, o.Amount, o.FilledAmount, o.Status, o.CreatedAt}
+	}
+	return rows
+}
+
+func (r ordersResult) MarshalJSON() ([]byte, error) {
+	return json.Marshal([]api.Order(r))
+}
+
+func newOrdersCmd(s *rootState) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "orders",
+		Short: "Manage orders",
+	}
+	cmd.AddCommand(
+		newOrdersListCmd(s),
+		newOrdersGetCmd(s),
+		newOrdersCreateCmd(s),
+		newOrdersCancelCmd(s),
+	)
+	return cmd
+}
+
+func newOrdersListCmd(s *rootState) *cobra.Command {
+	var pair, status, from, to string
+	var limit int
+
+	cmd := &cobra.Command{
+		Use:   "list",
+		Short: "List orders",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if status != "" && !api.ValidStatuses[status] {
+				return fmt.Errorf("invalid --status %q: must be one of: open, closed, new, partially-filled, filled, canceled, filled-and-canceled, done-for-day, rejected", status)
+			}
+			orders, err := s.client.GetOrders(api.OrdersFilter{
+				Pairs:  splitPairs(pair),
+				Status: status,
+				Limit:  limit,
+				From:   from,
+				To:     to,
+			})
+			if err != nil {
+				return handleAPIError(err)
+			}
+			return writeOutput(s, ordersResult(orders))
+		},
+	}
+
+	cmd.Flags().StringVarP(&pair, "pair", "p", "", "Filter by trading pair, comma-separated (e.g. BTC-EUR,ETH-EUR)")
+	cmd.Flags().StringVar(&status, "status", "", "Filter by status: open, closed, new, partially-filled, filled, canceled, filled-and-canceled, done-for-day, rejected")
+	cmd.Flags().IntVarP(&limit, "limit", "l", 0, "Maximum number of results")
+	cmd.Flags().StringVar(&from, "from", "", "Start time filter (RFC3339, e.g. 2024-01-01T00:00:00Z)")
+	cmd.Flags().StringVar(&to, "to", "", "End time filter (RFC3339, e.g. 2024-12-31T23:59:59Z)")
+
+	return cmd
+}
+
+func newOrdersGetCmd(s *rootState) *cobra.Command {
+	return &cobra.Command{
+		Use:     "get <order-id>",
+		Short:   "Get a single order by ID",
+		Example: `  bp-fusion orders get 1219733c-4214-4ce8-9369-22aa132cab0b`,
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			order, err := s.client.GetOrder(args[0])
+			if err != nil {
+				return handleAPIError(err)
+			}
+			return writeOutput(s, ordersResult{*order})
+		},
+	}
+}
+
+func newOrdersCreateCmd(s *rootState) *cobra.Command {
+	var pair, side, orderType, limitPrice, amount, quantity string
+	var yes bool
+
+	cmd := &cobra.Command{
+		Use:   "create",
+		Short: "Place a new order",
+		Example: `  # Buy 0.0001 BTC at a limit price
+  bp-fusion orders create --pair BTC-EUR --side buy --type limit --limit-price 50000 --quantity 0.0001
+
+  # Spend 30 EUR on BTC at market price
+  bp-fusion orders create --pair BTC-EUR --side buy --type market --amount 30 --yes`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if amount == "" && quantity == "" {
+				return fmt.Errorf("one of --amount (quote currency, e.g. 30 EUR) or --quantity (base currency, e.g. 0.0001 BTC) is required")
+			}
+			if amount != "" && quantity != "" {
+				return fmt.Errorf("--amount and --quantity are mutually exclusive: use one or the other")
+			}
+			if strings.ToLower(orderType) == "limit" && limitPrice == "" {
+				return fmt.Errorf("--limit-price is required for limit orders")
+			}
+
+			if !yes {
+				fmt.Println()
+				fmt.Printf("  Pair:      %s\n", pair)
+				fmt.Printf("  Side:      %s\n", side)
+				fmt.Printf("  Type:      %s\n", orderType)
+				if limitPrice != "" {
+					fmt.Printf("  Price:     %s\n", limitPrice)
+				}
+				if quantity != "" {
+					fmt.Printf("  Quantity:  %s (base currency)\n", quantity)
+				} else {
+					fmt.Printf("  Amount:    %s (quote currency)\n", amount)
+				}
+				fmt.Println()
+
+				if !promptConfirm("Place this order?") {
+					fmt.Println("Cancelled.")
+					return nil
+				}
+			}
+
+			order, err := s.client.CreateOrder(api.CreateOrderRequest{
+				Pair:     pair,
+				Side:     titleCase(side),
+				Type:     titleCase(orderType),
+				Price:    limitPrice,
+				Amount:   amount,
+				Quantity: quantity,
+			})
+			if err != nil {
+				return handleAPIError(err)
+			}
+
+			return writeOutput(s, ordersResult{*order})
+		},
+	}
+
+	cmd.Flags().StringVarP(&pair, "pair", "p", "", "Trading pair (e.g. BTC-EUR)")
+	cmd.Flags().StringVarP(&side, "side", "s", "", "Order side: buy or sell")
+	cmd.Flags().StringVarP(&orderType, "type", "t", "limit", "Order type: limit or market")
+	cmd.Flags().StringVar(&limitPrice, "limit-price", "", "Limit price (required for limit orders)")
+	cmd.Flags().StringVarP(&quantity, "quantity", "q", "", "Quantity in base currency (e.g. 0.0001 BTC) — mutually exclusive with --amount")
+	cmd.Flags().StringVarP(&amount, "amount", "a", "", "Amount in quote currency (e.g. 30 EUR) — mutually exclusive with --quantity")
+	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompt")
+
+	_ = cmd.MarkFlagRequired("pair")
+	_ = cmd.MarkFlagRequired("side")
+
+	return cmd
+}
+
+func newOrdersCancelCmd(s *rootState) *cobra.Command {
+	var yes bool
+
+	cmd := &cobra.Command{
+		Use:     "cancel <order-id>",
+		Short:   "Cancel an open order",
+		Example: `  bp-fusion orders cancel abc-123`,
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			id := args[0]
+
+			if !yes {
+				fmt.Printf("\n  Order ID: %s\n\n", id)
+				if !promptConfirm("Cancel this order?") {
+					fmt.Println("Aborted.")
+					return nil
+				}
+			}
+
+			if err := s.client.CancelOrder(id); err != nil {
+				return handleAPIError(err)
+			}
+
+			fmt.Printf("Order %s cancelled.\n", id)
+			return nil
+		},
+	}
+
+	cmd.Flags().BoolVarP(&yes, "yes", "y", false, "Skip confirmation prompt")
+
+	return cmd
+}
+
+func titleCase(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + strings.ToLower(s[1:])
+}
+
+func promptConfirm(prompt string) bool {
+	fmt.Printf("%s [y/N]: ", prompt)
+	reader := bufio.NewReader(os.Stdin)
+	response, _ := reader.ReadString('\n')
+	response = strings.TrimSpace(strings.ToLower(response))
+	return response == "y" || response == "yes"
+}

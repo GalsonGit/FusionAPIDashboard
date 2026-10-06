@@ -1,0 +1,149 @@
+package api
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"os"
+	"time"
+)
+
+const (
+	maxResponseSize = 10 * 1024 * 1024
+	requestTimeout  = 30 * time.Second
+	clientOrigin    = "fusion-cli"
+)
+
+type Client struct {
+	BaseURL    string
+	APIKey     string
+	UserAgent  string
+	Debug      bool
+	HTTPClient *http.Client
+}
+
+type Error struct {
+	StatusCode int
+	Message    string
+}
+
+func (e *Error) Error() string {
+	return fmt.Sprintf("API error %d: %s", e.StatusCode, e.Message)
+}
+
+func (e *Error) IsUnauthorized() bool {
+	return e.StatusCode == http.StatusUnauthorized
+}
+
+func NewClient(baseURL, apiKey, userAgent string, debug bool) *Client {
+	return &Client{
+		BaseURL:   baseURL,
+		APIKey:    apiKey,
+		UserAgent: userAgent,
+		Debug:     debug,
+		HTTPClient: &http.Client{
+			Timeout: requestTimeout,
+		},
+	}
+}
+
+func (c *Client) get(path string, params url.Values, out interface{}) error {
+	reqURL := c.BaseURL + path
+	if len(params) > 0 {
+		reqURL += "?" + params.Encode()
+	}
+	return c.do(http.MethodGet, reqURL, nil, out)
+}
+
+func (c *Client) post(path string, body interface{}, out interface{}) error {
+	reqURL := c.BaseURL + path
+	return c.do(http.MethodPost, reqURL, body, out)
+}
+
+func (c *Client) delete(path string) error {
+	reqURL := c.BaseURL + path
+	return c.do(http.MethodDelete, reqURL, nil, nil)
+}
+
+func (c *Client) do(method, reqURL string, body interface{}, out interface{}) error {
+	var reqBody io.Reader
+	if body != nil {
+		b, err := json.Marshal(body)
+		if err != nil {
+			return fmt.Errorf("marshal request: %w", err)
+		}
+		reqBody = bytes.NewReader(b)
+	}
+
+	if c.Debug {
+		fmt.Fprintf(os.Stderr, "[debug] %s %s\n", method, reqURL)
+	}
+
+	req, err := http.NewRequest(method, reqURL, reqBody)
+	if err != nil {
+		return fmt.Errorf("create request: %w", err)
+	}
+
+	req.Header.Set("X-Api-Key", c.APIKey)
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("X-Client-Origin", clientOrigin)
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	if c.UserAgent != "" {
+		req.Header.Set("User-Agent", c.UserAgent)
+	}
+
+	resp, err := c.HTTPClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
+	if err != nil {
+		return fmt.Errorf("read response: %w", err)
+	}
+
+	if c.Debug && len(respBody) > 0 {
+		fmt.Fprintf(os.Stderr, "[debug] response body: %s\n", respBody)
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return &Error{
+			StatusCode: resp.StatusCode,
+			Message:    extractErrorMessage(respBody),
+		}
+	}
+
+	if out != nil && len(respBody) > 0 {
+		if err := json.Unmarshal(respBody, out); err != nil {
+			return fmt.Errorf("decode response: %w", err)
+		}
+	}
+
+	return nil
+}
+
+func extractErrorMessage(body []byte) string {
+	var errResp struct {
+		Message string `json:"message"`
+		Error   string `json:"error"`
+	}
+	if err := json.Unmarshal(body, &errResp); err == nil {
+		if errResp.Message != "" {
+			return errResp.Message
+		}
+		if errResp.Error != "" {
+			return errResp.Error
+		}
+	}
+	msg := string(body)
+	if len(msg) > 200 {
+		msg = msg[:200] + "..."
+	}
+	return msg
+}

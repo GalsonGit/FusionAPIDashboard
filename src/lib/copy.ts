@@ -88,6 +88,7 @@ type Copy = {
   stakeLine: (stake: string, fee: string, net: string) => string;
   confirmCheck: string;
   stakeBought: string;
+  stakeLater: string;
   staked: string;
   stakeFail: string;
   stakeNone: string;
@@ -203,6 +204,7 @@ export const copy: Record<Lang, Copy> = {
     stakeLine: (stake, fee, net) => `Einsatz ${stake} · Gebühr ${fee} · Kaufwert ${net}`,
     confirmCheck: "Diese Käufe jetzt ausführen.",
     stakeBought: "Gekaufte Assets zu 100 % staken",
+    stakeLater: "In späteren Updates möglich!",
     staked: "Gestakt",
     stakeFail: "Stake fehlgeschlagen",
     stakeNone: "Kein Staking für dieses Asset",
@@ -323,6 +325,7 @@ export const copy: Record<Lang, Copy> = {
     stakeLine: (stake, fee, net) => `Spend ${stake} · Fee ${fee} · Net ${net}`,
     confirmCheck: "Place these buys now.",
     stakeBought: "Stake 100% of the bought assets",
+    stakeLater: "Available in a later update!",
     staked: "Staked",
     stakeFail: "Stake failed",
     stakeNone: "No staking for this asset",

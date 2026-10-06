@@ -113,7 +113,6 @@ export function Kaufplan() {
   const [results, setResults] = useState<OrderResult[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [accepted, setAccepted] = useState(false);
-  const [stakeAll, setStakeAll] = useState(false);
   const [lang, setLang] = useState<Lang>("de");
   const [leftFiat, setLeftFiat] = useState<number | null>(null);
   const booted = useRef(false);
@@ -456,7 +455,6 @@ export function Kaufplan() {
           spent: leg.amount,
           feeAmount: leg.fee.toFixed(2),
           feeCurrency: quote,
-          ...(stakeAll && leg.qty != null && leg.qty > 0 ? { stake: "staked" as const } : {}),
         }));
         setResults(next);
         setLeftFiat(
@@ -471,7 +469,7 @@ export function Kaufplan() {
         data: {
           apiKey: apiKey.trim(),
           lang,
-          stake: stakeAll,
+          stake: false,
           orders: legs.map((leg) => ({ pair: leg.pair, amount: leg.amount })),
         },
       });
@@ -1169,14 +1167,17 @@ export function Kaufplan() {
             <p className="mt-3 font-mono text-sm">
               {t.stakeLine(formatMoney(gross, quote), formatMoney(fee, quote), formatMoney(net, quote))}
             </p>
-            <label className="mt-4 flex items-start gap-2 text-sm">
+            <label className="mt-4 flex items-start gap-2 rounded-lg border border-brass px-3 py-2 text-sm">
               <input
                 type="checkbox"
-                checked={stakeAll}
-                onChange={(event) => setStakeAll(event.target.checked)}
+                checked={false}
+                disabled
                 className="mt-1 size-4 accent-primary"
               />
-              {t.stakeBought}
+              <span>
+                {t.stakeBought}
+                <span className="mt-0.5 block font-medium text-brass">{t.stakeLater}</span>
+              </span>
             </label>
             {mode === "live" ? (
               <label className="mt-4 flex items-start gap-2 text-sm">

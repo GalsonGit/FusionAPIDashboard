@@ -1,0 +1,25 @@
+package api
+
+import (
+	"net/url"
+	"strings"
+)
+
+type Asset struct {
+	Symbol string `json:"symbol"`
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+}
+
+func (c *Client) GetAssets(assets []string) ([]Asset, error) {
+	params := url.Values{}
+	if len(assets) > 0 {
+		params.Set("asset", strings.Join(assets, ","))
+	}
+
+	var result []Asset
+	if err := c.get("/v1/assets", params, &result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}

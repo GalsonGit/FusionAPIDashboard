@@ -1,0 +1,33 @@
+package api
+
+import (
+	"net/url"
+	"strings"
+)
+
+type Pair struct {
+	Pair            string `json:"pair"`
+	BaseAsset       string `json:"baseAsset"`
+	QuoteAsset      string `json:"quoteAsset"`
+	BaseAssetType   string `json:"baseAssetType"`
+	QuoteAssetType  string `json:"quoteAssetType"`
+	TickSize        string `json:"tickSize"`
+	SizeIncrement   string `json:"sizeIncrement"`
+	AmountIncrement string `json:"amountIncrement"`
+	MaxOrderSize    string `json:"maxOrderSize"`
+	MinOrderAmount  string `json:"minOrderAmount"`
+	MaxOrderAmount  string `json:"maxOrderAmount"`
+}
+
+func (c *Client) GetPairs(pairs []string) ([]Pair, error) {
+	params := url.Values{}
+	if len(pairs) > 0 {
+		params.Set("pair", strings.Join(pairs, ","))
+	}
+
+	var result []Pair
+	if err := c.get("/v1/pairs", params, &result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}

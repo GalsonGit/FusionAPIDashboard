@@ -1,0 +1,484 @@
+openapi: 3.1.0
+info:
+  title: Bitpanda Public API
+  version: v1
+  description: |
+    REST API for trading, portfolio management, earn products, and market data.
+
+    **Authentication:** All endpoints require an API key passed in the `x-api-key` header.
+    Generate an API key at https://app.bitpanda.com/my-account/apikey under the Bitpanda tab.
+
+    > This file is updated by the CI pipeline on each production deploy.
+    > For the always-current interactive reference see the hosted API docs.
+  contact:
+    url: https://github.com/bitpanda/public-api/discussions
+
+servers:
+  - url: https://api.public.bitpanda.com
+    description: Production
+
+security:
+  - apiKeyAuth: []
+
+components:
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+
+  parameters:
+    cursor:
+      name: cursor
+      in: query
+      description: Pagination cursor returned in the previous response
+      schema:
+        type: string
+    pageSize:
+      name: pageSize
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+
+  schemas:
+    Asset:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        symbol:
+          type: string
+          example: BTC
+        isin:
+          type: string
+        type:
+          type: string
+          example: CRYPTO
+        group:
+          type: string
+
+    Ticker:
+      type: object
+      properties:
+        assetId:
+          type: string
+          format: uuid
+        price:
+          type: string
+          example: "67432.18"
+        currency:
+          type: string
+          example: EUR
+        timestamp:
+          type: string
+          format: date-time
+
+    Holding:
+      type: object
+      properties:
+        assetId:
+          type: string
+          format: uuid
+        quantity:
+          type: string
+        value:
+          type: string
+        equivalentCurrencyId:
+          type: string
+          format: uuid
+
+    EarnConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        assetId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [FLEXIBLE, LOCKED]
+        mode:
+          type: string
+          enum: [STAKING_EARN, STABLE_COIN_EARN, PASSIVE_EARN]
+        apr:
+          type: string
+          example: "0.042"
+
+    Quote:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        assetId:
+          type: string
+          format: uuid
+        currencyId:
+          type: string
+          format: uuid
+        side:
+          type: string
+          enum: [BUY, SELL]
+        price:
+          type: string
+        quantity:
+          type: string
+        notional:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+
+    Operation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+        assetId:
+          type: string
+          format: uuid
+        amount:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    PagedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+        cursor:
+          type: string
+          description: Pass as `cursor` in the next request to get the next page. Absent when there are no more pages.
+
+paths:
+  /assets:
+    get:
+      summary: List assets
+      description: Returns tradeable assets. Supports pagination and filtering.
+      operationId: listAssets
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/pageSize'
+        - name: symbol
+          in: query
+          schema:
+            type: string
+          example: BTC
+        - name: isin
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: group
+          in: query
+          schema:
+            type: string
+        - name: id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PagedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Asset'
+
+  /assets/{assetId}/ticker:
+    get:
+      summary: Get asset ticker
+      description: Returns the current price for a single asset.
+      operationId: getTicker
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticker'
+
+  /currencies:
+    get:
+      summary: List fiat currencies
+      operationId: listCurrencies
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+
+  /portfolio/holdings:
+    get:
+      summary: Get portfolio holdings
+      description: Returns current holdings for the authenticated user.
+      operationId: getPortfolioHoldings
+      parameters:
+        - name: equivalentCurrencyId
+          in: query
+          description: UUID of the valuation currency (defaults to EUR)
+          schema:
+            type: string
+            format: uuid
+        - name: currencyId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: assetId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Holding'
+
+  /portfolio/history:
+    get:
+      summary: Get portfolio performance history
+      operationId: getPortfolioHistory
+      parameters:
+        - name: timeframe
+          in: query
+          description: "DAY | WEEK | MONTH | SIX_MONTH | YEAR (default: DAY)"
+          schema:
+            type: string
+            enum: [DAY, WEEK, MONTH, SIX_MONTH, YEAR]
+        - name: equivalentCurrencyId
+          in: query
+          description: UUID of the valuation currency (defaults to EUR)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+
+  /earn/configs:
+    get:
+      summary: List earn configurations
+      description: Returns available earn products with APR and availability.
+      operationId: listEarnConfigs
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/pageSize'
+        - name: assetId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [FLEXIBLE, LOCKED]
+        - name: mode
+          in: query
+          schema:
+            type: string
+            enum: [STAKING_EARN, STABLE_COIN_EARN, PASSIVE_EARN]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PagedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/EarnConfig'
+
+  /earn/stake:
+    post:
+      summary: Stake assets
+      description: Stakes the specified asset amount into an earn product.
+      operationId: earnStake
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [configId, assetAmount]
+              properties:
+                configId:
+                  type: string
+                  format: uuid
+                  description: Earn config UUID from /earn/configs
+                assetAmount:
+                  type: string
+                  example: "0.5"
+                walletId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Stake initiated
+
+  /earn/unstake:
+    post:
+      summary: Unstake assets
+      description: Unstakes the specified asset amount from an earn product.
+      operationId: earnUnstake
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [configId, assetAmount]
+              properties:
+                configId:
+                  type: string
+                  format: uuid
+                assetAmount:
+                  type: string
+                  example: "0.5"
+                walletId:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Unstake initiated
+
+  /rfq/quotes:
+    post:
+      summary: Request a trading quote (RFQ)
+      description: |
+        Requests a price quote for buying or selling an asset.
+        Only one quote can be active at a time — accept or let it expire before requesting another.
+        Specify either `quantity` (asset amount) or `notional` (currency amount), not both.
+      operationId: requestForQuote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [assetId, currencyId, side]
+              properties:
+                assetId:
+                  type: string
+                  format: uuid
+                currencyId:
+                  type: string
+                  format: uuid
+                side:
+                  type: string
+                  enum: [BUY, SELL]
+                quantity:
+                  type: string
+                  description: Asset amount (e.g. "0.1")
+                notional:
+                  type: string
+                  description: Currency amount (e.g. "100")
+      responses:
+        '200':
+          description: Quote created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+
+  /rfq/quotes/{quoteId}/accept:
+    post:
+      summary: Accept a trading quote
+      description: Accepts a previously requested quote and executes the trade.
+      operationId: acceptQuote
+      parameters:
+        - name: quoteId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Trade executed
+
+  /operations:
+    get:
+      summary: List operation history
+      operationId: listOperations
+      parameters:
+        - $ref: '#/components/parameters/cursor'
+        - $ref: '#/components/parameters/pageSize'
+        - name: assetIds
+          in: query
+          schema:
+            type: string
+          description: Comma-separated asset UUIDs
+        - name: currencyIds
+          in: query
+          schema:
+            type: string
+          description: Comma-separated currency UUIDs
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start of range (ISO-8601)
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End of range (ISO-8601)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PagedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Operation'

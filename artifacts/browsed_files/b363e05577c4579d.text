@@ -1,0 +1,27 @@
+package api
+
+import (
+	"net/url"
+	"strings"
+)
+
+type Ticker struct {
+	Pair   string `json:"pair"`
+	Price  string `json:"price"`
+	High   string `json:"high"`
+	Low    string `json:"low"`
+	Volume string `json:"volume"`
+}
+
+func (c *Client) GetTickers(pairs []string) ([]Ticker, error) {
+	params := url.Values{}
+	if len(pairs) > 0 {
+		params.Set("pair", strings.Join(pairs, ","))
+	}
+
+	var result []Ticker
+	if err := c.get("/v1/tickers", params, &result); err != nil {
+		return nil, err
+	}
+	return result, nil
+}

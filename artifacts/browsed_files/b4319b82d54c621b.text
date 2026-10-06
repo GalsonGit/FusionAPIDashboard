@@ -1,0 +1,120 @@
+package api
+
+import (
+	"fmt"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
+)
+
+type OrderFee struct {
+	Amount   string `json:"amount"`
+	Currency string `json:"currency"`
+}
+
+type Order struct {
+	ID                 string    `json:"id"`
+	Pair               string    `json:"pair"`
+	Side               string    `json:"side"`
+	Type               string    `json:"type"`
+	Status             string    `json:"status"`
+	PricedIn           string    `json:"pricedIn"`
+	Quantity           string    `json:"quantity"`
+	Amount             string    `json:"amount"`
+	LimitPrice         string    `json:"limitPrice"`
+	TriggerPrice       string    `json:"triggerPrice"`
+	FilledQuantity     string    `json:"filledQuantity"`
+	FilledAmount       string    `json:"filledAmount"`
+	FilledPercentage   string    `json:"filledPercentage"`
+	FilledAveragePrice string    `json:"filledAveragePrice"`
+	Fee                *OrderFee `json:"fee"`
+	TimeInForce        string    `json:"timeInForce"`
+	UpdatedAt          string    `json:"updatedAt"`
+	CreatedAt          string    `json:"createdAt"`
+	ExecutedAt         string    `json:"executedAt"`
+	EndTime            string    `json:"endTime"`
+}
+
+type ordersResponse struct {
+	Data []Order  `json:"data"`
+	Meta PageMeta `json:"meta"`
+}
+
+var ValidStatuses = map[string]bool{
+	"open": true, "closed": true,
+	"new": true, "partially-filled": true, "filled": true,
+	"canceled": true, "filled-and-canceled": true,
+	"done-for-day": true, "rejected": true,
+}
+
+type OrdersFilter struct {
+	Pairs  []string
+	Status string
+	Limit  int
+	From   string
+	To     string
+}
+
+func (c *Client) GetOrders(filter OrdersFilter) ([]Order, error) {
+	params := url.Values{}
+	if len(filter.Pairs) > 0 {
+		params.Set("pair", strings.Join(filter.Pairs, ","))
+	}
+	if filter.Status != "" {
+		params.Set("status", filter.Status)
+	}
+	if filter.Limit > 0 {
+		params.Set("limit", strconv.Itoa(filter.Limit))
+	}
+	if filter.From != "" {
+		t, err := time.Parse(time.RFC3339, filter.From)
+		if err != nil {
+			return nil, fmt.Errorf("invalid --from value %q: must be RFC3339 (e.g. 2024-01-01T00:00:00Z)", filter.From)
+		}
+		params.Set("startTime", strconv.FormatInt(t.Unix(), 10))
+	}
+	if filter.To != "" {
+		t, err := time.Parse(time.RFC3339, filter.To)
+		if err != nil {
+			return nil, fmt.Errorf("invalid --to value %q: must be RFC3339 (e.g. 2024-12-31T23:59:59Z)", filter.To)
+		}
+		params.Set("endTime", strconv.FormatInt(t.Unix(), 10))
+	}
+
+	var result ordersResponse
+	if err := c.get("/v1/account/orders", params, &result); err != nil {
+		return nil, err
+	}
+
+	return result.Data, nil
+}
+
+func (c *Client) GetOrder(id string) (*Order, error) {
+	var result Order
+	if err := c.get("/v1/account/orders/"+id, url.Values{}, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+type CreateOrderRequest struct {
+	Pair     string `json:"pair"`
+	Side     string `json:"side"`
+	Type     string `json:"type"`
+	Price    string `json:"limitPrice,omitempty"`
+	Amount   string `json:"amount,omitempty"`   // spend in quote currency (e.g. 30 EUR)
+	Quantity string `json:"quantity,omitempty"` // buy/sell in base currency (e.g. 0.0001 BTC)
+}
+
+func (c *Client) CreateOrder(req CreateOrderRequest) (*Order, error) {
+	var result Order
+	if err := c.post("/v1/account/orders", req, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (c *Client) CancelOrder(id string) error {
+	return c.delete("/v1/account/orders/" + id)
+}
